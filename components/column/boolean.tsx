@@ -1,27 +1,25 @@
-import { TextField } from "@mui/material";
+import { Box, Switch, TextField } from "@mui/material";
 import styles from 'styles/Schema.module.scss'
-import { ColumnProps } from ".";
+import { ColumnProps, ColumnState } from ".";
+import { useEffect } from "react";
 
-type BooleanColumn = {
-  name: string;
-  type: 'boolean';
-  default: boolean;
-  index?: boolean;
+export default function BooleanConstructor(props: ColumnState) {
+  const { default: defaultProp } = props.column
+  const [defaultValue, setDefaultValue] = defaultProp
 
-  isProtected?: boolean;
-  error?: string
+  useEffect(() => {
+    if (!props.isEdit) {
+      setDefaultValue("true")
+    }
+  }, [])
+
+  return (
+    <>
+      <Box display={"flex"} alignItems={"center"} marginY={"10px"}>
+        <TextField className={styles['input-label']} value={"Default"} variant="standard" type={'text'} InputProps={{ disableUnderline: true, readOnly: true }} />
+        <p>:</p>
+        <Switch checked={defaultValue === "true"} onClick={() => { setDefaultValue(defaultValue === 'true' ? 'false' : 'true') }} />
+      </Box>
+    </>
+  )
 }
-
-class BooleanConstructor {
-  public static renderForm(props: ColumnProps) {
-    const { tableName } = props
-    // <TextField className={styles.input} disabled={false} value={""} variant="standard" type={'text'} InputProps={{ disableUnderline: false }} onChange={e => { }} error label={"FOO"} />
-    return (
-      <>
-        <h1>hi {tableName}</h1>
-      </>
-    )
-  }
-}
-
-export default BooleanConstructor
