@@ -435,8 +435,8 @@ export default function Schema() {
                       <AddCard sx={{ fontSize: "10px", marginLeft: "5px" }} />
                       <p>ADD NEW COLUMN</p>
                     </div>
-                    {t.columns.map((c) => (
-                      <div className={styles['column-item']}>
+                    {t.columns.map((c, i) => (
+                      <div className={styles['column-item']} key={i}>
                         <p style={{ margin: 0 }}>{c.name} <i><b>({c.primary ? "PRIMARY" : c.type})</b></i></p>
                         <IconButton
                           size='small'
