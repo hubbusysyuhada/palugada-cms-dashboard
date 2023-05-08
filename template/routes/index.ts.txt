@@ -1,0 +1,17 @@
+import { FastifyPluginCallback } from "fastify";
+import userRoute from "./userRoute";
+{{!! IMPORTED_ROUTES !!}}
+
+
+const baseRoute: FastifyPluginCallback = (server, opts, next) => {
+  server.get('/ping', async (req, res) => {
+    res.send("pong")
+  })
+
+  {{!! ROUTES !!}}
+
+  next()
+}
+
+
+export default baseRoute

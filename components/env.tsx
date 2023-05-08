@@ -34,7 +34,6 @@ export default function Env() {
   }
 
   const addEnv: AddNewEnv = (key) => {
-    key = key.replaceAll(" ", "_").toUpperCase()
     const existedKeys = envVar.map(v => v.key)
     if (!existedKeys.includes(key)) {
       const newEnv: EnvObj[] = [...envVar, { key, value: "", isProtected: false }]
@@ -134,7 +133,7 @@ export default function Env() {
           </div>
         ))}
         <div style={{ marginTop: "36px" }}>
-          <TextField className={styles['env-input-key']} value={newEnv} onChange={e => setNewEnv(e.target.value)} placeholder='KEY' variant="standard" InputProps={{
+          <TextField className={styles['env-input-key']} value={newEnv} onChange={e => setNewEnv(e.target.value.replaceAll(' ', '_').toUpperCase())} placeholder='KEY' variant="standard" InputProps={{
             ...customTextInput,
           }} />
           <Button size='small' variant="outlined" disabled={!newEnv ? true : false} onClick={() => { addEnv(newEnv); setNewEnv("") }} style={{

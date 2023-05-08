@@ -1,0 +1,46 @@
+import * as qs from "qs"
+import { FastifyReply, FastifyRequest } from "fastify";
+import { AppDataSource, QueryProps } from "../database/index";
+import { {{!! MODEL !!}} } from "../database/entity/{{!! MODEL !!}}";
+
+export default class {
+  static async findAll(req: FastifyRequest, rep: FastifyReply) {
+    // const {  } = qs.parse(req.query as string) as QueryProps
+    const data = await AppDataSource.getRepository({{!! MODEL !!}}).find()
+    rep.code(200).send({data})
+  }
+
+  static async findById(req: FastifyRequest<{ Params: { id: {{!! ID_TYPE !!}} } }>, rep: FastifyReply) {
+    // const {  } = qs.parse(req.query as string) as QueryProps
+    const id = req.params.id
+    const data = await AppDataSource.getRepository({{!! MODEL !!}}).findOneBy({id})
+    rep.code(200).send({data})
+  }
+
+  static async create(req: FastifyRequest<{ Body: Record<string, any> }>, rep: FastifyReply) {
+    // const {  } = qs.parse(req.query as string) as QueryProps
+    const manager = AppDataSource.manager
+    const data = manager.create({{!! MODEL !!}}, req.body)
+    await manager.save(data)
+    rep.code(201).send({message: "{{!! MODEL !!}} created"})
+  }
+
+  static async update(
+    req: FastifyRequest<{
+      Body: Record<string, any>,
+      Params: { id: {{!! ID_TYPE !!}} }
+    }>,
+    rep: FastifyReply) {
+    // const {  } = qs.parse(req.query as string) as QueryProps
+    const id = req.params.id
+    await AppDataSource.getRepository({{!! MODEL !!}}).update({id}, req.body)
+    rep.code(201).send({message: `{{!! MODEL !!}} (id: ${id}) updated`})
+  }
+
+  static async delete( req: FastifyRequest<{ Params: { id: {{!! ID_TYPE !!}} } }>, rep: FastifyReply) {
+    // const {  } = qs.parse(req.query as string) as QueryProps
+    const id = req.params.id
+    await AppDataSource.getRepository({{!! MODEL !!}}).delete({id})
+    rep.code(201).send({message: `{{!! MODEL !!}} (id: ${id}) deleted`})
+  }
+}

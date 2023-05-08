@@ -4,9 +4,19 @@ import bcrypt from 'fastify-bcrypt'
 import jwt from '@fastify/jwt'
 import cors from '@fastify/cors'
 import routes from './routes'
-import { AppDataSource } from './src/data-source'
+import { AppDataSource } from './database'
 import fastifyStatic from '@fastify/static'
 // const path = require('path')
+require('dotenv').config()
+
+type UserJWT = {{!! USER !!}}
+
+declare module "@fastify/jwt" {
+  interface FastifyJWT {
+    payload: UserJWT
+    user: UserJWT
+  }
+}
 
 const server = fastify()
 

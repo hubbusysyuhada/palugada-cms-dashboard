@@ -1,0 +1,16 @@
+import * as orm from 'typeorm'
+
+@orm.Entity({ name: "{{!! TABLENAME !!}}" })
+export class {{!! CLASSNAME !!}} {
+{{!! COLUMN !!}}
+}
+
+export class {{!! CLASSNAME !!}}Response {
+    constructor ({{!! CLASS_PROPS !!}}) {}
+
+    static buildResponse(model: {{!! CLASSNAME !!}}) {
+      return new {{!! CLASSNAME !!}}Response(
+        {{!! COLUMN_RESPONSE !!}}
+      )
+    }
+}

@@ -1,11 +1,9 @@
-// 'default' | 'defaultType' | 'unique' | 'nullable' | 'index'
-
 import { Box, MenuItem, Select, Switch, TextField } from "@mui/material";
 import styles from 'styles/Schema.module.scss'
 import { ColumnState } from ".";
 import { useEffect, useState } from "react";
 
-export default function TextConstructor(props: ColumnState & { textType: 'tiny' | 'medium' | 'long' }) {
+export default function TextConstructor(props: ColumnState) {
   const {
     default: defaultProp,
     defaultType: defaultTypeProp,

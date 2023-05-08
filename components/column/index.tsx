@@ -4,6 +4,8 @@ import { Column, DataType, SqlColumnProps } from '../schema';
 import BooleanConstructor from './boolean';
 import FloatConstructor from './float';
 import IntegerConstructor from './integer';
+import TextConstructor from './text';
+import TimestampConstructor from './timestamp';
 
 
 export default function ColumnConstructor(props: ColumnProps) {
@@ -16,6 +18,14 @@ export default function ColumnConstructor(props: ColumnProps) {
       break;
     case 'float':
       return <FloatConstructor column={props.column} isEdit={props.isEdit} columnRule={props.columnRule} />
+      break;
+    case 'timestamp':
+      return <TimestampConstructor column={props.column} isEdit={props.isEdit} columnRule={props.columnRule} />
+      break;
+    case 'tinytext':
+    case 'mediumtext':
+    case 'longtext':
+      return <TextConstructor column={props.column} isEdit={props.isEdit} columnRule={props.columnRule} />
       break;
     default:
       return (

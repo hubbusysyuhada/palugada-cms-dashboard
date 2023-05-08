@@ -1,7 +1,7 @@
 import navStyles from 'styles/Generator.module.scss'
 import Image from 'next/image'
 import { useState } from 'react'
-import { Env, Schema, RBAC } from '@/components/'
+import { Env, Schema, RBAC, Function } from '@/components/'
 import axios from 'axios'
 
 export default function Generator() {
@@ -16,6 +16,9 @@ export default function Generator() {
         break;
       case 'env':
         return (<Env />)
+        break;
+      case 'function':
+        return (<Function />)
         break;
       default:
         return (<RBAC />)
@@ -32,7 +35,8 @@ export default function Generator() {
       },
       responseType: "arraybuffer",
       data: {
-        env: JSON.parse(localStorage.getItem('ENV_VAR') || "[]")
+        env: JSON.parse(localStorage.getItem('ENV_VAR') || "[]"),
+        schema: JSON.parse(localStorage.getItem('SCHEMA') || '{"tables": []}')
       }
     })
     
@@ -40,7 +44,7 @@ export default function Generator() {
     const fileUrl = window.URL.createObjectURL(new Blob([data]))
     const anchor = document.createElement("a")
     anchor.href = fileUrl
-    anchor.setAttribute("download", "server_app.zip")
+    anchor.setAttribute("download", "mandoor-generated-app.zip")
     anchor.click()
     anchor.remove()
   }
@@ -70,6 +74,9 @@ export default function Generator() {
             </div>
             <div className={`${navStyles['menu-container']} ${tab === 'rbac' ? navStyles.active : ''}`} onClick={() => moveTab("rbac")}>
               <h4>RBAC</h4>
+            </div>
+            <div className={`${navStyles['menu-container']} ${tab === 'function' ? navStyles.active : ''}`} onClick={() => moveTab("function")}>
+              <h4>FUNCTION</h4>
             </div>
           </div>
           <div className={navStyles.exporter}>

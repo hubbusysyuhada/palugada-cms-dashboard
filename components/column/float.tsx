@@ -9,7 +9,6 @@ export default function FloatConstructor(props: ColumnState) {
     defaultType: defaultTypeProp,
     unique: uniqueProp,
     nullable: nullableProp,
-    autoIncrement: autoIncrementProp,
     index: indexProp,
     precision: precisionProp,
     scale: scaleProp
@@ -41,9 +40,12 @@ export default function FloatConstructor(props: ColumnState) {
   }, [])
 
   useEffect(() => {
-    if (haveDefault && !defaultValue) props.columnRule(false)
+    const precisionCheck = !precision || precision == 0
+    const scaleCheck = !scale || scale == 0
+    const defaultCheck = haveDefault && !defaultValue
+    if (defaultCheck || precisionCheck || scaleCheck) props.columnRule(false)
     else props.columnRule(true)
-  }, [defaultValue, haveDefault])
+  }, [defaultValue, haveDefault, precision, scale])
 
   const changeDefault = () => {
     if (!haveDefault) {
@@ -103,12 +105,16 @@ export default function FloatConstructor(props: ColumnState) {
       <Box display={"flex"} alignItems={"center"} marginY={"10px"}>
         <TextField className={styles['input-label']} value={"Precision"} variant="standard" type={'text'} InputProps={{ disableUnderline: true, readOnly: true }} />
         <p>:</p>
-        <TextField className={styles['input']} value={precision} onChange={e => setPrecision(e.target.value)} variant="standard" type={"number"} InputProps={{ inputProps: { min: 3, max: 10 } }} />
+        <TextField className={styles['input']} value={precision} onChange={e => {
+          if (+(e.target.value) <= 10 && +(e.target.value) >= 3) setPrecision(e.target.value)
+        }} variant="standard" type={"number"} InputProps={{ inputProps: { min: 3, max: 10 } }} />
       </Box>
       <Box display={"flex"} alignItems={"center"} marginY={"10px"}>
         <TextField className={styles['input-label']} value={"Scale"} variant="standard" type={'text'} InputProps={{ disableUnderline: true, readOnly: true }} />
         <p>:</p>
-        <TextField className={styles['input']} value={scale} onChange={e => setScale(e.target.value)} variant="standard" type={"number"} InputProps={{ inputProps: { min: 1, max: 3 } }} />
+        <TextField className={styles['input']} value={scale} onChange={e => {
+          if (+(e.target.value) <= 3 && +(e.target.value) >= 1) setScale(e.target.value)
+        }} variant="standard" type={"number"} InputProps={{ inputProps: { min: 1, max: 3 } }} />
       </Box>
       <Box display={"flex"} alignItems={"center"} marginY={"10px"}>
         <TextField className={styles['input-label']} value={"Index"} variant="standard" type={'text'} InputProps={{ disableUnderline: true, readOnly: true }} />

@@ -3,41 +3,37 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import fs from 'fs'
 import { zip } from 'zip-a-folder';
 import { EnvObj } from '@/components/env';
+import { Schema } from '@/components/schema';
+import ServerGenerator from '@/helper/ServerGenerator';
+
+interface ExtendedNextApiRequest extends NextApiRequest {
+  body: RequestBody
+}
+
+export interface RequestBody {
+  env: EnvObj[];
+  schema: Schema;
+};
 
 export default async function handler(
-  req: NextApiRequest,
+  req: ExtendedNextApiRequest,
   res: NextApiResponse<any>
 ) {
   if (req.method !== 'POST') {
     res.status(405).send({ message: 'Only POST requests allowed' })
     return
   }
-  const env: EnvObj[] = req.body.env
 
-  // create env
-  const dir = './mandoor-generated-server'
-  fs.mkdirSync(dir)
+  const serverGenerator = new ServerGenerator(req.body)
+  await serverGenerator.generateServer()
 
-  let envExample = ''
-  let envServer = ''
+  const fileStream = serverGenerator.getFileStream()
 
-  env.forEach(({ key, value }) => {
-    envExample += `${key}=\n`
-    envServer += `${key}=${value}\n`
-  })
-
-  fs.writeFileSync(`${dir}/.env.example`, envExample, { encoding: 'utf-8' })
-  fs.writeFileSync(`${dir}/.env`, envServer, { encoding: 'utf-8' })
-
-  await zip(dir, './mandoor-generated-server.zip')
-
-  fs.rmSync(dir, { recursive: true, force: true });
-
-  const fileStream = fs.createReadStream(`./mandoor-generated-server.zip`)
   fileStream.on('open', () => {
     fileStream.pipe(res)
   })
   fileStream.on('end', () => {
+    serverGenerator.deleteDirectory()
     fs.unlink('./mandoor-generated-server.zip', () => { })
   })
 

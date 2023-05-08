@@ -1,0 +1,28 @@
+import "reflect-metadata"
+import { DataSource, DataSourceOptions } from "typeorm"
+import env from "../helpers/env"
+{{!! IMPORT !!}}
+
+const opts = {
+    type: env.DB_TYPE,
+    host: env.DB_HOST,
+    port: env.DB_PORT,
+    username: env.DB_USERNAME,
+    password: env.DB_PASSWORD,
+    database: env.DB_NAME,
+    synchronize: true,
+    logging: false,
+    entities: {{!! ENTITIES !!}},
+    migrations: [],
+    subscribers: [],
+} as DataSourceOptions
+
+export const AppDataSource = new DataSource(opts)
+
+export type QueryProps = {
+    filter: Record<string, string | number | boolean>[];
+    order: Record<string, "ASC" | "DESC">;
+    groupBy: string[];
+    limit: number;
+    offset: number;
+}

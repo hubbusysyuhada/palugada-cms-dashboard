@@ -9,14 +9,12 @@ export default function IntegerConstructor(props: ColumnState) {
     defaultType: defaultTypeProp,
     unique: uniqueProp,
     nullable: nullableProp,
-    autoIncrement: autoIncrementProp,
     index: indexProp
   } = props.column
   const [defaultValue, setDefaultValue] = defaultProp
   const [defaultType, setDefaultType] = defaultTypeProp
   const [unique, setUnique] = uniqueProp
   const [nullable, setNullable] = nullableProp
-  const [autoIncrement, setAutoIncrement] = autoIncrementProp
   const [index, setIndex] = indexProp
 
   const [haveDefault, setHaveDefault] = useState(false) // if have default then disable unique, auto increment and nullable
@@ -27,7 +25,6 @@ export default function IntegerConstructor(props: ColumnState) {
       setDefaultType("value")
       setNullable("true")
       setUnique("false")
-      setAutoIncrement("false")
       setIndex("false")
     }
     if (defaultValue) {
@@ -44,7 +41,6 @@ export default function IntegerConstructor(props: ColumnState) {
     if (!haveDefault) {
       setNullable("false")
       setUnique("false")
-      setAutoIncrement("false")
     }
     else {
       setDefaultType("value")
@@ -78,11 +74,6 @@ export default function IntegerConstructor(props: ColumnState) {
           <TextField className={styles['input-label']} value={"Unique"} variant="standard" type={'text'} InputProps={{ disableUnderline: true, readOnly: true }} />
           <p>:</p>
           <Switch checked={unique} onClick={() => { setUnique(!unique) }} />
-        </Box>
-        <Box display={"flex"} alignItems={"center"} marginY={"10px"}>
-          <TextField className={styles['input-label']} value={"Auto Increment"} variant="standard" type={'text'} InputProps={{ disableUnderline: true, readOnly: true }} />
-          <p>:</p>
-          <Switch checked={autoIncrement} onClick={() => { setAutoIncrement(!autoIncrement) }} />
         </Box>
         <Box display={"flex"} alignItems={"center"} marginY={"10px"}>
           <TextField className={styles['input-label']} value={"Nullable"} variant="standard" type={'text'} InputProps={{ disableUnderline: true, readOnly: true }} />

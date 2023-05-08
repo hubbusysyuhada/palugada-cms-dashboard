@@ -1,15 +1,15 @@
 import makeKey from "@/helper/makeKey";
 import setLocalStorage from "@/helper/setLocalStorage";
 import { AddCard, CreateNewFolderOutlined, Delete, KeyboardArrowDown, KeyboardArrowUp, Settings } from "@mui/icons-material";
-import { Box, Button, Grid, IconButton, MenuItem, Modal, Select, TextField, Typography, } from "@mui/material";
+import { Box, Button, Grid, IconButton, MenuItem, Modal, Select, Switch, TextField, } from "@mui/material";
 import React, { useEffect, useState } from "react"
 import styles from 'styles/Schema.module.scss'
 import Swal from "sweetalert2";
 import _ from 'lodash'
 import ColumnConstrucor from "./column";
 
-export type DataType = "tinytext" | "mediumtext" | "longtext" | "password" | "integer" | "float" | "boolean"
-export type SqlColumnProps = 'default' | 'defaultType' | 'unique' | 'nullable' | 'primary' | 'autoIncrement' | 'index' | 'precision' | 'scale'
+export type DataType = "tinytext" | "mediumtext" | "longtext" | "password" | "integer" | "float" | "boolean" | "timestamp" | "uuid" | "autoincrement"
+export type SqlColumnProps = 'default' | 'defaultType' | 'unique' | 'nullable' | 'primary' | 'index' | 'precision' | 'scale'
 
 export type Column = {
   name: string;
@@ -84,24 +84,31 @@ export default function Schema() {
           columns: [
             {
               name: "id",
-              type: "tinytext",
-              default: "UUID()",
-              defaultType: "expression",
+              type: "uuid",
               primary: true,
-              isProtected: true
+              isProtected: true,
             },
             {
               name: "external_id",
               type: "tinytext",
               unique: true,
               index: true,
-              isProtected: true
+              nullable: false,
+              isProtected: true,
             },
             {
               name: "password",
               type: "password",
-              isProtected: true
-            }
+              nullable: false,
+              isProtected: true,
+            },
+            {
+              name: "created_at",
+              type: "timestamp",
+              default: "new Date()",
+              defaultType: "value",
+              isProtected: true,
+            },
           ],
           isProtected: true
         }
@@ -141,11 +148,16 @@ export default function Schema() {
       columns: [
         {
           name: "id",
-          type: "tinytext",
-          default: "UUID()",
-          defaultType: "expression",
+          type: "uuid",
           primary: true,
-          isProtected: true
+          isProtected: true,
+        },
+        {
+          name: "created_at",
+          type: "timestamp",
+          default: "new Date()",
+          defaultType: "value",
+          isProtected: true,
         },
       ]
     }
@@ -207,7 +219,7 @@ export default function Schema() {
     const { isProtected, isOpen, error: errorMsg } = schema.tables[index]
     return (
       <>
-        <TextField value={tableName} variant="standard" type={'text'} InputProps={{ disableUnderline: true, readOnly: schema.tables[index].isProtected, style: { color: "#dbdbdb" } }} onChange={e => { renameTable(e.target.value, index) }} onClick={e => e.stopPropagation()} error={!!errorMsg} label={errorMsg} />
+        <TextField value={tableName} variant="standard" type={'text'} InputProps={{ disableUnderline: true, readOnly: schema.tables[index].isProtected, style: { color: "#dbdbdb" } }} onChange={e => { renameTable(e.target.value.replaceAll(' ', '_'), index) }} onClick={e => e.stopPropagation()} error={!!errorMsg} label={errorMsg} />
         {!isProtected && <Delete style={{ height: "16px", width: "16px", color: "#be2b2b" }} onClick={async e => {
           e.stopPropagation()
           await deleteTable(tableName)
@@ -268,10 +280,14 @@ export default function Schema() {
             <MenuItem value={"boolean"}>Boolean</MenuItem>
             <MenuItem value={"integer"}>Integer</MenuItem>
             <MenuItem value={"float"}>Float</MenuItem>
+            <MenuItem value={"tinytext"}>Tinytext</MenuItem>
+            <MenuItem value={"mediumtext"}>Mediumtext</MenuItem>
+            <MenuItem value={"longtext"}>Longtext</MenuItem>
+            <MenuItem value={"timestamp"}>Timestamp</MenuItem>
           </Select>
         </Box>
         <ColumnConstrucor type={columnType} tableName={tableName} column={{
-          default: defaultValue, autoIncrement, defaultType, index, nullable, primary, unique, precision, scale
+          default: defaultValue, defaultType, index, nullable, primary, unique, precision, scale
         }} isEdit={isEditColumn} columnRule={setColumnRulePassed} />
       </Box>
     )
@@ -390,7 +406,7 @@ export default function Schema() {
       </Box>
     )
   }
-  
+
   return (
     <div className={styles.root}>
       <Grid container spacing={4} justifyContent={"center"} >
