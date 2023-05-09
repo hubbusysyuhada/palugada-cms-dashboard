@@ -11,7 +11,7 @@ export default class ServerGenerator {
   protected schema: Schema
   protected dirr = '/tmp/mandoor-generated-server'
   protected zipPath = '/tmp/mandoor-generated-server.zip'
-  protected templatePath = '/template'
+  protected templatePath = 'template'
 
   constructor(body: RequestBody) {
     this.env = body.env
@@ -184,7 +184,7 @@ export default class ServerGenerator {
     let envHelper: string[] = ['']
 
     const template = fs.readFileSync(this.templatePath + '/helpers/env.ts.txt', { encoding: "utf-8" })
-
+    
     this.env.forEach(({ key, value }) => {
       envExample += `${key}=\n`
       envServer += `${key}=${value}\n`
