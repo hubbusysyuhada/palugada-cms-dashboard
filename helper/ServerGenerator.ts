@@ -11,7 +11,7 @@ export default class ServerGenerator {
   protected schema: Schema
   protected dirr = '/tmp/mandoor-generated-server'
   protected zipPath = '/tmp/mandoor-generated-server.zip'
-  protected templatePath = 'template'
+  protected templatePath = './tmp/template'
 
   constructor(body: RequestBody) {
     this.env = body.env
