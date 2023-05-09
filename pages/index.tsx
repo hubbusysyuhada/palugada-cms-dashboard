@@ -27,26 +27,28 @@ export default function Generator() {
   }
 
   const downloadServer = async () => {
-    const { data } = await axios({
-      url: `${window.location.origin}/api/generate`,
-      method: "POST",
-      headers: {
-        "Content-Type": 'application/json',
-      },
-      responseType: "arraybuffer",
-      data: {
-        env: JSON.parse(localStorage.getItem('ENV_VAR') || "[]"),
-        schema: JSON.parse(localStorage.getItem('SCHEMA') || '{"tables": []}')
-      }
-    })
-    
-    
-    const fileUrl = window.URL.createObjectURL(new Blob([data]))
-    const anchor = document.createElement("a")
-    anchor.href = fileUrl
-    anchor.setAttribute("download", "mandoor-generated-app.zip")
-    anchor.click()
-    anchor.remove()
+    try {
+      const { data } = await axios({
+        url: `${window.location.origin}/api/generate`,
+        method: "POST",
+        headers: {
+          "Content-Type": 'application/json',
+        },
+        responseType: "arraybuffer",
+        data: {
+          env: JSON.parse(localStorage.getItem('ENV_VAR') || "[]"),
+          schema: JSON.parse(localStorage.getItem('SCHEMA') || '{"tables": []}')
+        }
+      })
+      const fileUrl = window.URL.createObjectURL(new Blob([data]))
+      const anchor = document.createElement("a")
+      anchor.href = fileUrl
+      anchor.setAttribute("download", "mandoor-generated-app.zip")
+      anchor.click()
+      anchor.remove()
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   return (
@@ -72,20 +74,20 @@ export default function Generator() {
             <div className={`${navStyles['menu-container']} ${tab === 'env' ? navStyles.active : ''}`} onClick={() => moveTab("env")}>
               <h4>ENV</h4>
             </div>
-            <div className={`${navStyles['menu-container']} ${tab === 'rbac' ? navStyles.active : ''}`} onClick={() => moveTab("rbac")}>
+            {/* <div className={`${navStyles['menu-container']} ${tab === 'rbac' ? navStyles.active : ''}`} onClick={() => moveTab("rbac")}>
               <h4>RBAC</h4>
-            </div>
-            <div className={`${navStyles['menu-container']} ${tab === 'function' ? navStyles.active : ''}`} onClick={() => moveTab("function")}>
+            </div> */}
+            {/* <div className={`${navStyles['menu-container']} ${tab === 'function' ? navStyles.active : ''}`} onClick={() => moveTab("function")}>
               <h4>FUNCTION</h4>
-            </div>
+            </div> */}
           </div>
           <div className={navStyles.exporter}>
-            <div className={navStyles['menu-container']}>
+            {/* <div className={navStyles['menu-container']}>
               <h4>IMPORT</h4>
-            </div>
-            <div className={navStyles['menu-container']}>
+            </div> */}
+            {/* <div className={navStyles['menu-container']}>
               <h4>EXPORT</h4>
-            </div>
+            </div> */}
             <div className={navStyles['menu-container']} onClick={downloadServer}>
               <h4>DOWNLOAD</h4>
             </div>
