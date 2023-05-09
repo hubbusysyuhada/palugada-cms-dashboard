@@ -28,7 +28,7 @@ export default class ServerGenerator {
     await this.generateDatabaseEntity()
     await this.generateHandler()
     await this.generateRoutes()
-    
+
     await this.compileFile()
   }
 
@@ -121,6 +121,8 @@ export default class ServerGenerator {
         }
       }
     })
+    const jsonFile = { schema: this.schema }
+    fs.writeFileSync(`${this.dirr}/schema-metadata.json`, JSON.stringify(jsonFile, null, 2), { "encoding": "utf-8" })
   }
 
   protected async generateDatabaseEntity() {
@@ -185,7 +187,7 @@ export default class ServerGenerator {
     let envHelper: string[] = ['']
 
     const template = fs.readFileSync(this.templatePath + '/helpers/env.ts.txt', { encoding: "utf-8" })
-    
+
     this.env.forEach(({ key, value }) => {
       envExample += `${key}=\n`
       envServer += `${key}=${value}\n`
