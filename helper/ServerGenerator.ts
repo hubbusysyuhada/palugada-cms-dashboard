@@ -5,13 +5,14 @@ import fs from 'fs'
 import { zip } from 'zip-a-folder';
 import _ from 'lodash'
 import ColumnGenerator from "./columnGenerator";
+import path from "path";
 
 export default class ServerGenerator {
   protected env: EnvObj[]
   protected schema: Schema
   protected dirr = '/tmp/mandoor-generated-server'
   protected zipPath = '/tmp/mandoor-generated-server.zip'
-  protected templatePath = './tmp/template'
+  protected templatePath = path.join(process.cwd(), 'template')
 
   constructor(body: RequestBody) {
     this.env = body.env
