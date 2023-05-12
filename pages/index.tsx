@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { useState } from 'react'
 import { Env, Schema, RBAC, Function } from '@/components/'
 import axios from 'axios'
+import Head from 'next/head'
 
 export default function Generator() {
   const [tab, setTab] = useState('schema')
@@ -52,60 +53,65 @@ export default function Generator() {
   }
 
   return (
-    <div style={{ display: "flex" }}>
-      <div className={navStyles.sidebar}>
-        <div className={navStyles['project-detail']}>
-          <Image
-            className={navStyles.logo}
-            src="/mandoor-logo.png"
-            alt="Mandoor Logo"
-            width={45}
-            height={37}
-            priority
-          />
-          <h3>Server Generator</h3>
-        </div>
-
-        <div className={navStyles.menu}>
-          <div className={navStyles.generator}>
-            <div className={`${navStyles['menu-container']} ${tab === 'schema' ? navStyles.active : ''}`} onClick={() => moveTab("schema")}>
-              <h4>SCHEMA</h4>
-            </div>
-            <div className={`${navStyles['menu-container']} ${tab === 'env' ? navStyles.active : ''}`} onClick={() => moveTab("env")}>
-              <h4>ENV</h4>
-            </div>
-            {/* <div className={`${navStyles['menu-container']} ${tab === 'rbac' ? navStyles.active : ''}`} onClick={() => moveTab("rbac")}>
-              <h4>RBAC</h4>
-            </div> */}
-            {/* <div className={`${navStyles['menu-container']} ${tab === 'function' ? navStyles.active : ''}`} onClick={() => moveTab("function")}>
-              <h4>FUNCTION</h4>
-            </div> */}
-          </div>
-          <div className={navStyles.exporter}>
-            {/* <div className={navStyles['menu-container']}>
-              <h4>IMPORT</h4>
-            </div> */}
-            {/* <div className={navStyles['menu-container']}>
-              <h4>EXPORT</h4>
-            </div> */}
-            <div className={navStyles['menu-container']} onClick={downloadServer}>
-              <h4>DOWNLOAD</h4>
-            </div>
+    <>
+      <Head>
+        <title>Mandoor by Digital Hubb</title>
+      </Head>
+      <div style={{ display: "flex" }}>
+        <div className={navStyles.sidebar}>
+          <div className={navStyles['project-detail']}>
             <Image
               className={navStyles.logo}
-              src="/mandoor-text.png"
-              alt="Mandoor Text"
-              width={100}
-              height={15}
+              src="/mandoor-logo.png"
+              alt="Mandoor Logo"
+              width={45}
+              height={37}
               priority
             />
-            <p className={navStyles.copyright}>© Hubbusysyuhada</p>
+            <h3>Server Generator</h3>
+          </div>
+
+          <div className={navStyles.menu}>
+            <div className={navStyles.generator}>
+              <div className={`${navStyles['menu-container']} ${tab === 'schema' ? navStyles.active : ''}`} onClick={() => moveTab("schema")}>
+                <h4>SCHEMA</h4>
+              </div>
+              <div className={`${navStyles['menu-container']} ${tab === 'env' ? navStyles.active : ''}`} onClick={() => moveTab("env")}>
+                <h4>ENV</h4>
+              </div>
+              {/* <div className={`${navStyles['menu-container']} ${tab === 'rbac' ? navStyles.active : ''}`} onClick={() => moveTab("rbac")}>
+                <h4>RBAC</h4>
+              </div> */}
+              {/* <div className={`${navStyles['menu-container']} ${tab === 'function' ? navStyles.active : ''}`} onClick={() => moveTab("function")}>
+                <h4>FUNCTION</h4>
+              </div> */}
+            </div>
+            <div className={navStyles.exporter}>
+              {/* <div className={navStyles['menu-container']}>
+                <h4>IMPORT</h4>
+              </div> */}
+              {/* <div className={navStyles['menu-container']}>
+                <h4>EXPORT</h4>
+              </div> */}
+              <div className={navStyles['menu-container']} onClick={downloadServer}>
+                <h4>DOWNLOAD</h4>
+              </div>
+              <Image
+                className={navStyles.logo}
+                src="/mandoor-text.png"
+                alt="Mandoor Text"
+                width={100}
+                height={15}
+                priority
+              />
+              <p className={navStyles.copyright}>© Hubbusysyuhada</p>
+            </div>
           </div>
         </div>
+        <div className={navStyles['menu-content']}>
+          {selectTab()}
+        </div>
       </div>
-      <div className={navStyles['menu-content']}>
-        {selectTab()}
-      </div>
-    </div>
+    </>
   )
 }
