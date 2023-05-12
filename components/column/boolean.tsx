@@ -1,6 +1,6 @@
 import { Box, Switch, TextField } from "@mui/material";
 import styles from 'styles/Schema.module.scss'
-import { ColumnProps, ColumnState } from ".";
+import { ColumnState } from ".";
 import { useEffect } from "react";
 
 export default function BooleanConstructor(props: ColumnState) {
@@ -15,10 +15,12 @@ export default function BooleanConstructor(props: ColumnState) {
 
   return (
     <>
-      <Box display={"flex"} alignItems={"center"} marginY={"10px"}>
+      <Box display={"flex"} alignItems={"center"} marginY={"10px"} width={"70%"} justifyContent={"space-between"}>
         <TextField className={styles['input-label']} value={"Default"} variant="standard" type={'text'} InputProps={{ disableUnderline: true, readOnly: true }} />
         <p>:</p>
-        <Switch checked={defaultValue === "true"} onClick={() => { setDefaultValue(defaultValue === 'true' ? 'false' : 'true') }} />
+        <div className={styles['input']}>
+          <Switch checked={defaultValue === "true"} onClick={() => { setDefaultValue(defaultValue === 'true' ? 'false' : 'true') }} />
+        </div>
       </Box>
     </>
   )

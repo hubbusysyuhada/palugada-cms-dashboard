@@ -6,6 +6,7 @@ import FloatConstructor from './float';
 import IntegerConstructor from './integer';
 import TextConstructor from './text';
 import TimestampConstructor from './timestamp';
+import VarcharConstructor from './varchar';
 
 
 export default function ColumnConstructor(props: ColumnProps) {
@@ -26,6 +27,9 @@ export default function ColumnConstructor(props: ColumnProps) {
     case 'mediumtext':
     case 'longtext':
       return <TextConstructor column={props.column} isEdit={props.isEdit} columnRule={props.columnRule} />
+      break;
+    case 'varchar':
+      return <VarcharConstructor column={props.column} isEdit={props.isEdit} columnRule={props.columnRule} />
       break;
     default:
       return (

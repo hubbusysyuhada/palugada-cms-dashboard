@@ -114,7 +114,7 @@ export default function Env() {
           <div key={index} style={{ display: "flex" }}>
             <TextField className={styles['env-input-key']} placeholder='KEY' disabled={isProtected} value={key} variant="standard" InputProps={{ ...customTextInput }} onChange={e => updateEnv({ index, key: e.target.value, value })} />
             <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
-              <TextField className={styles['env-input-val']} placeholder='VALUE' value={value} variant="standard" type={showEnv[key] ? 'text' : 'password'} InputProps={{ ...customTextInput }} onChange={e => updateEnv({ index, key, value: e.target.value })} />
+              <TextField className={styles['env-input-val']} placeholder='VALUE' value={value} variant="standard" type={showEnv[key] ? 'text' : 'password'} InputProps={{ ...customTextInput, readOnly: key === 'APP_KEY' }} onChange={e => updateEnv({ index, key, value: e.target.value })} />
               <IconButton
                 size='small'
                 onClick={() => handleClickShowPassword(key)}

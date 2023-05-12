@@ -8,8 +8,8 @@ import Swal from "sweetalert2";
 import _ from 'lodash'
 import ColumnConstrucor from "./column";
 
-export type DataType = "tinytext" | "mediumtext" | "longtext" | "password" | "integer" | "float" | "boolean" | "timestamp" | "uuid" | "autoincrement"
-export type SqlColumnProps = 'default' | 'defaultType' | 'unique' | 'nullable' | 'primary' | 'index' | 'precision' | 'scale'
+export type DataType = "varchar" | "tinytext" | "mediumtext" | "longtext" | "password" | "integer" | "float" | "boolean" | "timestamp" | "uuid" | "autoincrement"
+export type SqlColumnProps = 'default' | 'defaultType' | 'unique' | 'nullable' | 'primary' | 'index' | 'precision' | 'scale' | 'length' 
 
 export type Column = {
   name: string;
@@ -21,6 +21,8 @@ export type Column = {
   primary?: boolean;
   autoIncrement?: boolean;
   index?: boolean;
+
+  length?: number;
 
   scale?: number;
   precision?: number;
@@ -47,7 +49,7 @@ const modalStyle = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 400,
+  width: 600,
   bgcolor: 'background.paper',
   border: '2px solid #08011b',
   borderRadius: "10px",
@@ -74,6 +76,7 @@ export default function Schema() {
   const index = useState(false)
   const precision = useState<number | null>(null)
   const scale = useState<number | null>(null)
+  const length = useState<number | null>(null)
 
 
   useEffect(() => {
@@ -90,7 +93,8 @@ export default function Schema() {
             },
             {
               name: "external_id",
-              type: "tinytext",
+              type: "varchar",
+              length: 255,
               unique: true,
               index: true,
               nullable: false,
@@ -261,13 +265,13 @@ export default function Schema() {
 
   const renderEditCreateColumn = (tableName: string) => {
     return (
-      <Box>
-        <Box display={"flex"} alignItems={"center"} marginY={"10px"}>
+      <Box display={"flex"} justifyContent={"start"} alignContent={"space-between"} alignItems={"center"} flexDirection={"column"} width={"100%"}>
+        <Box display={"flex"} alignItems={"center"} marginY={"10px"} width={"70%"} justifyContent={"space-between"}>
           <TextField className={styles['input-label']} value={"Name"} variant="standard" type={'text'} InputProps={{ disableUnderline: true, readOnly: true }} />
           <p>:</p>
           <TextField className={styles.input} placeholder="Column Name" value={columnName} variant="standard" type={'text'} InputProps={{ disableUnderline: false }} onChange={e => { setColumnName(e.target.value.toLowerCase().replaceAll(' ', '_')) }} />
         </Box>
-        <Box display={"flex"} alignItems={"center"} marginY={"10px"}>
+        <Box display={"flex"} alignItems={"center"} marginY={"10px"} width={"70%"} justifyContent={"space-between"}>
           <TextField className={styles['input-label']} value={"Column Type"} variant="standard" type={'text'} InputProps={{ disableUnderline: true, readOnly: true }} />
           <p>:</p>
           <Select
@@ -280,6 +284,7 @@ export default function Schema() {
             <MenuItem value={"boolean"}>Boolean</MenuItem>
             <MenuItem value={"integer"}>Integer</MenuItem>
             <MenuItem value={"float"}>Float</MenuItem>
+            <MenuItem value={"varchar"}>Variable Character</MenuItem>
             <MenuItem value={"tinytext"}>Tinytext</MenuItem>
             <MenuItem value={"mediumtext"}>Mediumtext</MenuItem>
             <MenuItem value={"longtext"}>Longtext</MenuItem>
@@ -287,7 +292,7 @@ export default function Schema() {
           </Select>
         </Box>
         <ColumnConstrucor type={columnType} tableName={tableName} column={{
-          default: defaultValue, defaultType, index, nullable, primary, unique, precision, scale
+          default: defaultValue, defaultType, index, nullable, primary, unique, precision, scale, length
         }} isEdit={isEditColumn} columnRule={setColumnRulePassed} />
       </Box>
     )
@@ -435,12 +440,14 @@ export default function Schema() {
                       <AddCard sx={{ fontSize: "10px", marginLeft: "5px" }} />
                       <p>ADD NEW COLUMN</p>
                     </div>
-                    {t.columns.map((c, i) => (
-                      <div className={styles['column-item']} key={i}>
+                    {t.columns.map((c, j) => (
+                      <div className={styles['column-item']} key={j}>
                         <p style={{ margin: 0 }}>{c.name} <i><b>({c.primary ? "PRIMARY" : c.type})</b></i></p>
                         <IconButton
                           size='small'
-                          onClick={() => { showEditColumnModal(i, c) }}
+                          onClick={() => {
+                            showEditColumnModal(i, c)
+                          }}
                           edge="end"
                         >
                           {!c.isProtected && <Settings style={{ height: "12px", width: "12px" }} />}
@@ -467,7 +474,7 @@ export default function Schema() {
         }
       }}>
         <Box sx={modalStyle}>
-          <Box display={"flex"} justifyContent={"start"} alignContent={"center"} alignItems={"center"} flexDirection={"column"}>
+          <Box display={"flex"} justifyContent={"start"} alignContent={"space-around"} alignItems={"center"} flexDirection={"column"}>
             {renderEditCreateColumn(schema.tables[columnTableId]?.name)}
             {renderModalBtnGroup()}
           </Box>

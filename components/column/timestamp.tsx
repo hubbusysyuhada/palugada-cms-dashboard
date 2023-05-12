@@ -1,5 +1,3 @@
-// 'default' | 'defaultType' | 'nullable'
-
 import { Box, MenuItem, Select, Switch, TextField } from "@mui/material";
 import styles from 'styles/Schema.module.scss'
 import { ColumnState } from ".";
@@ -46,16 +44,17 @@ export default function TimestampConstructor(props: ColumnState) {
 
   const renderRules = () => {
     if (haveDefault) return (
-      <Box display={"flex"} alignItems={"center"} marginY={"10px"} justifyContent={"flex-end"}>
-        <Box display={"flex"} width={"80%"} justifyContent={"space-between"} alignItems={"center"}>
-          <TextField value={defaultValue} variant="standard" type={'text'} onChange={e => setDefaultValue(e.target.value)} className={styles['input-label']} />
+      <Box display={"flex"} alignItems={"center"} marginY={"10px"} width={"50%"} justifyContent={"flex-end"}>
+        <Box display={"flex"} width={"100%"} justifyContent={"space-between"} alignItems={"center"}>
+          <TextField value={defaultValue} variant="standard" type={'text'} onChange={e => setDefaultValue(e.target.value)} sx={{marginRight: "20px", width: "200px"}} />
           <p>as</p>
           <Select
             variant="standard"
             value={defaultType}
             label="Column Type"
             onChange={e => { setDefaultType(e.target.value) }}
-            sx={{width: "75px"}}
+            sx={{width: "75px", marginLeft: "20px"}}
+            disabled={true}
           >
             <MenuItem value={"value"}>Value</MenuItem>
             <MenuItem value={"expression"}>Expression</MenuItem>
@@ -65,10 +64,12 @@ export default function TimestampConstructor(props: ColumnState) {
     )
     return (
       <>
-        <Box display={"flex"} alignItems={"center"} marginY={"10px"}>
+        <Box display={"flex"} alignItems={"center"} marginY={"10px"} width={"70%"} justifyContent={"space-between"}>
           <TextField className={styles['input-label']} value={"Nullable"} variant="standard" type={'text'} InputProps={{ disableUnderline: true, readOnly: true }} />
           <p>:</p>
-          <Switch checked={nullable} onClick={() => { setNullable(!nullable) }} />
+          <div className={styles['input']}>
+            <Switch checked={nullable} onClick={() => { setNullable(!nullable) }} />
+          </div>
         </Box>
       </>
     )
@@ -76,10 +77,12 @@ export default function TimestampConstructor(props: ColumnState) {
 
   return (
     <>
-      <Box display={"flex"} alignItems={"center"} marginY={"10px"}>
+      <Box display={"flex"} alignItems={"center"} marginY={"10px"} width={"70%"} justifyContent={"space-between"}>
         <TextField className={styles['input-label']} value={"Default"} variant="standard" type={'text'} InputProps={{ disableUnderline: true, readOnly: true }} />
         <p>:</p>
-        <Switch checked={haveDefault} onClick={changeDefault} />
+        <div className={styles['input']}>
+          <Switch checked={haveDefault} onClick={changeDefault} />
+        </div>
       </Box>
       {renderRules()}
     </>

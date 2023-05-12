@@ -3,23 +3,21 @@ import styles from 'styles/Schema.module.scss'
 import { ColumnState } from ".";
 import { useEffect, useState } from "react";
 
-export default function FloatConstructor(props: ColumnState) {
+export default function VarcharConstructor(props: ColumnState) {
   const {
     default: defaultProp,
     defaultType: defaultTypeProp,
     unique: uniqueProp,
     nullable: nullableProp,
     index: indexProp,
-    precision: precisionProp,
-    scale: scaleProp
+    length: lengthProp
   } = props.column
   const [defaultValue, setDefaultValue] = defaultProp
   const [defaultType, setDefaultType] = defaultTypeProp
   const [unique, setUnique] = uniqueProp
   const [nullable, setNullable] = nullableProp
   const [index, setIndex] = indexProp
-  const [precision, setPrecision] = precisionProp
-  const [scale, setScale] = scaleProp
+  const [length, setLength] = lengthProp
 
   const [haveDefault, setHaveDefault] = useState(false) // if have default then disable unique, auto increment and nullable
 
@@ -30,9 +28,7 @@ export default function FloatConstructor(props: ColumnState) {
       setNullable("true")
       setUnique("false")
       setIndex("false")
-      // 123.45 has a precision of 5 and a scale of 2
-      setPrecision(10)
-      setScale(1)
+      setLength(255)
     }
     if (defaultValue) {
       setHaveDefault(true)
@@ -40,12 +36,9 @@ export default function FloatConstructor(props: ColumnState) {
   }, [])
 
   useEffect(() => {
-    const precisionCheck = !precision || precision == 0
-    const scaleCheck = !scale || scale == 0
-    const defaultCheck = haveDefault && !defaultValue
-    if (defaultCheck || precisionCheck || scaleCheck) props.columnRule(false)
+    if (haveDefault && !defaultValue) props.columnRule(false)
     else props.columnRule(true)
-  }, [defaultValue, haveDefault, precision, scale])
+  }, [defaultValue, haveDefault])
 
   const changeDefault = () => {
     if (!haveDefault) {
@@ -63,14 +56,14 @@ export default function FloatConstructor(props: ColumnState) {
     if (haveDefault) return (
       <Box display={"flex"} alignItems={"center"} marginY={"10px"} width={"50%"} justifyContent={"flex-end"}>
         <Box display={"flex"} width={"100%"} justifyContent={"space-between"} alignItems={"center"}>
-          <TextField value={defaultValue} variant="standard" type={'text'} onChange={e => setDefaultValue(e.target.value)} sx={{marginRight: "20px", width: "200px"}} />
+          <TextField value={defaultValue} variant="standard" type={'text'} onChange={e => setDefaultValue(e.target.value)} sx={{ marginRight: "20px", width: "200px" }} />
           <p>as</p>
           <Select
             variant="standard"
             value={defaultType}
             label="Column Type"
             onChange={e => { setDefaultType(e.target.value) }}
-            sx={{width: "75px", marginLeft: "20px"}}
+            sx={{ width: "75px", marginLeft: "20px" }}
             disabled={true}
           >
             <MenuItem value={"value"}>Value</MenuItem>
@@ -99,8 +92,17 @@ export default function FloatConstructor(props: ColumnState) {
     )
   }
 
+  const setLengthWithRule = (value: number) => {
+    if (value && value <= 1000) setLength(value)
+  }
+
   return (
     <>
+      <Box display={"flex"} alignItems={"center"} marginY={"10px"} width={"70%"} justifyContent={"space-between"}>
+        <TextField className={styles['input-label']} value={"Length"} variant="standard" type={'text'} InputProps={{ disableUnderline: true, readOnly: true }} />
+        <p>:</p>
+        <TextField className={styles.input} placeholder="Text Length" value={length} variant="standard" type={'number'} InputProps={{ disableUnderline: false, inputProps: { min: 1, max: 1000 } }} onChange={e => { setLengthWithRule(+(e.target.value)) }} />
+      </Box>
       <Box display={"flex"} alignItems={"center"} marginY={"10px"} width={"70%"} justifyContent={"space-between"}>
         <TextField className={styles['input-label']} value={"Default"} variant="standard" type={'text'} InputProps={{ disableUnderline: true, readOnly: true }} />
         <p>:</p>
@@ -109,24 +111,6 @@ export default function FloatConstructor(props: ColumnState) {
         </div>
       </Box>
       {renderRules()}
-      <Box display={"flex"} alignItems={"center"} marginY={"10px"} width={"70%"} justifyContent={"space-between"}>
-        <TextField className={styles['input-label']} value={"Precision"} variant="standard" type={'text'} InputProps={{ disableUnderline: true, readOnly: true }} />
-        <p>:</p>
-        <div className={styles['input']}>
-          <TextField className={styles['input']} value={precision} onChange={e => {
-            if (+(e.target.value) <= 10 && +(e.target.value) >= 3) setPrecision(e.target.value)
-          }} variant="standard" type={"number"} InputProps={{ inputProps: { min: 3, max: 10 } }} />
-        </div>
-      </Box>
-      <Box display={"flex"} alignItems={"center"} marginY={"10px"} width={"70%"} justifyContent={"space-between"}>
-        <TextField className={styles['input-label']} value={"Scale"} variant="standard" type={'text'} InputProps={{ disableUnderline: true, readOnly: true }} />
-        <p>:</p>
-        <div className={styles['input']}>
-          <TextField className={styles['input']} value={scale} onChange={e => {
-            if (+(e.target.value) <= 3 && +(e.target.value) >= 1) setScale(e.target.value)
-          }} variant="standard" type={"number"} InputProps={{ inputProps: { min: 1, max: 3 } }} />
-        </div>
-      </Box>
       <Box display={"flex"} alignItems={"center"} marginY={"10px"} width={"70%"} justifyContent={"space-between"}>
         <TextField className={styles['input-label']} value={"Index"} variant="standard" type={'text'} InputProps={{ disableUnderline: true, readOnly: true }} />
         <p>:</p>
