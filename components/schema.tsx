@@ -253,6 +253,7 @@ export default function Schema() {
 
     defaultValue[1](column.default || "")
     defaultType[1](column.defaultType || "value")
+    length[1](column.length || 0)
     const booleans = { unique, nullable, primary, autoIncrement, index }
     for (const key in booleans) {
       const v = key as keyof typeof column
@@ -329,6 +330,7 @@ export default function Schema() {
       nullable: nullable[0],
       primary: primary[0],
       unique: unique[0],
+      length: length[0] || 0,
     }
 
     const tables = JSON.parse(JSON.stringify(schema.tables))
@@ -381,6 +383,7 @@ export default function Schema() {
       nullable: nullable[0],
       primary: primary[0],
       unique: unique[0],
+      length: length[0] || 0,
     }
 
     const tables = schema.tables
