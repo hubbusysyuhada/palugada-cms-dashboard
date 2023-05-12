@@ -37,22 +37,7 @@ export default class ColumnGenerator {
 
   public async text(returnPrimitive?: boolean, columnType?: string,) {
     if (returnPrimitive) return 'string'
-    let size = 0
-    switch (columnType) {
-      case 'tinytext':
-        size = 255
-        break;
-      case 'mediumtext':
-        size = 5000
-        break;
-      case 'longtext':
-        size = 16383
-        break;
-      default:
-        size = 255
-        break;
-    }
-    return `    @orm.Column({ type: 'varchar', length: '${size}'${this.column.unique && !this.column.default ? ', unique: true' : ''} })\n    ${this.column.name}${this.column.nullable && !this.column.default ? '?' : ''}: string${this.column.default ? ' = ' + this.column.default : ''};`
+    return `    @orm.Column({ type: '${columnType}' })\n    ${this.column.name}${this.column.nullable && !this.column.default ? '?' : ''}: string${this.column.default ? ' = ' + this.column.default : ''};`
   }
 
   public async timestamp(returnPrimitive?: boolean) {
@@ -70,5 +55,9 @@ export default class ColumnGenerator {
 
   public async longtext(returnPrimitive?: boolean) {
     return await this.text(returnPrimitive)
+  }
+
+  public async varchar(returnPrimitive?: boolean) {
+    return `    @orm.Column({ type: 'varchar', length: '${this.column.length}'${this.column.unique && !this.column.default ? ', unique: true' : ''} })\n    ${this.column.name}${this.column.nullable && !this.column.default ? '?' : ''}: string${this.column.default ? ' = ' + this.column.default : ''};`
   }
 }

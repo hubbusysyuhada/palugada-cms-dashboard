@@ -100,6 +100,7 @@ export default class ServerGenerator {
         if (name === 'index.ts.txt') {
           const userColumns = this.schema.tables[0].columns
           const columnType = {
+            "varchar": "varchar",
             "tinytext": "string",
             "mediumtext": "string",
             "longtext": "string",
