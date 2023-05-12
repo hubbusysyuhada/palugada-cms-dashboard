@@ -32,12 +32,16 @@ export default class ColumnGenerator {
 
   public async password(returnPrimitive?: boolean) {
     if (returnPrimitive) return 'string'
-    return await this.text(returnPrimitive, 'mediumtext')
+    this.column.length = 255
+    this.column.default = ''
+    this.column.nullable = false
+    this.column.unique = false
+    return await this.varchar(returnPrimitive)
   }
 
-  public async text(returnPrimitive?: boolean, columnType?: string,) {
+  public async text(returnPrimitive?: boolean) {
     if (returnPrimitive) return 'string'
-    return `    @orm.Column({ type: '${columnType}' })\n    ${this.column.name}${this.column.nullable && !this.column.default ? '?' : ''}: string${this.column.default ? ' = ' + this.column.default : ''};`
+    return `    @orm.Column({ type: '${this.column.type}' })\n    ${this.column.name}${this.column.nullable && !this.column.default ? '?' : ''}: string${this.column.default ? ' = ' + this.column.default : ''};`
   }
 
   public async timestamp(returnPrimitive?: boolean) {

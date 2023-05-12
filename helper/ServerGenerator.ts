@@ -122,7 +122,7 @@ export default class ServerGenerator {
         }
       }
     })
-    const jsonFile = { schema: this.schema }
+    const jsonFile = { schema: this.schema, env: this.env.map(({ key }) => ({ key, value: "" })) }
     fs.writeFileSync(`${this.dirr}/schema-metadata.json`, JSON.stringify(jsonFile, null, 2), { "encoding": "utf-8" })
   }
 
