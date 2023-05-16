@@ -1,0 +1,16 @@
+import OrmInstance from "../../database";
+
+type UserJWT = {{!! USER !!}}
+
+declare module 'fastify' {
+  interface FastifyRequest {
+    orm: OrmInstance
+  }
+}
+
+declare module "@fastify/jwt" {
+  interface FastifyJWT {
+    payload: UserJWT
+    user: UserJWT
+  }
+}

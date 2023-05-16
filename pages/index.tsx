@@ -56,6 +56,7 @@ export default function Generator() {
     <>
       <Head>
         <title>Mandoor by Digital Hubb</title>
+        <link rel="shortcut icon" href="/mandoor-logo.png" />
       </Head>
       <div style={{ display: "flex" }}>
         <div className={navStyles.sidebar}>

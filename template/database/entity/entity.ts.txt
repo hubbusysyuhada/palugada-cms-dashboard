@@ -1,16 +1,7 @@
-import * as orm from 'typeorm'
+import * as orm from '@mikro-orm/core'
+import { v4 as uuid } from 'uuid'
 
-@orm.Entity({ name: "{{!! TABLENAME !!}}" })
-export class {{!! CLASSNAME !!}} {
+@orm.Entity({ tableName: "{{!! TABLENAME !!}}" })
+export default class {{!! CLASSNAME !!}} {
 {{!! COLUMN !!}}
-}
-
-export class {{!! CLASSNAME !!}}Response {
-    constructor ({{!! CLASS_PROPS !!}}) {}
-
-    static buildResponse(model: {{!! CLASSNAME !!}}) {
-      return new {{!! CLASSNAME !!}}Response(
-        {{!! COLUMN_RESPONSE !!}}
-      )
-    }
 }

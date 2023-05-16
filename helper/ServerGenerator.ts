@@ -24,6 +24,7 @@ export default class ServerGenerator {
     await this.generateEnv()
 
     await this.generateRootFiles()
+    await this.generateTypes()
     await this.generateMiddlewares()
     await this.generateDatabaseEntity()
     await this.generateHandler()
@@ -74,6 +75,30 @@ export default class ServerGenerator {
     fs.writeFileSync(`${this.dirr}/routes/index.ts`, this.parseFileContent({ IMPORTED_ROUTES, ROUTES }, indexTemplate), { encoding: 'utf-8' })
   }
 
+  protected async generateTypes() {
+    const userColumns = this.schema.tables[0].columns
+    const columnType = {
+      "varchar": "string",
+      "tinytext": "string",
+      "mediumtext": "string",
+      "longtext": "string",
+      "password": "string",
+      "integer": "number",
+      "float": "number",
+      "boolean": "boolean",
+      "timestamp": "Date",
+      "uuid": "string",
+      "autoincrement": "number",
+      "relation": "any"
+    }
+
+    this.makeDirectory(`${this.dirr}/@types`)
+    this.makeDirectory(`${this.dirr}/@types/fastify`)
+    const template = fs.readFileSync(this.templatePath + '/@types/fastify/index.d.ts.txt', { encoding: "utf-8" })
+    const USER = `{\n${userColumns.filter(c => c.type !== 'password').map(c => `  ${c.name}: ${columnType[c.type]};\n`).join('')}}`
+    fs.writeFileSync(`${this.dirr}/@types/fastify/index.d.ts`, this.parseFileContent({ USER }, template))
+  }
+
   protected async generateMiddlewares() {
     this.makeDirectory(`${this.dirr}/middleware`)
     const templates = fs.readdirSync(this.templatePath + '/middleware', { withFileTypes: true })
@@ -97,29 +122,7 @@ export default class ServerGenerator {
       if (f.isFile()) {
         const file = fs.readFileSync(`${this.templatePath}/${name}`, { encoding: "utf-8" })
         const path = `${this.dirr}/${name.slice(0, -4)}`
-        if (name === 'index.ts.txt') {
-          const userColumns = this.schema.tables[0].columns
-          const columnType = {
-            "varchar": "varchar",
-            "tinytext": "string",
-            "mediumtext": "string",
-            "longtext": "string",
-            "password": "string",
-            "integer": "number",
-            "float": "number",
-            "boolean": "boolean",
-            "timestamp": "Date",
-            "uuid": "string",
-            "autoincrement": "number",
-          }
-
-          const USER = `{\n${userColumns.filter(c => c.type !== 'password').map(c => `  ${c.name}: ${columnType[c.type]};\n`).join('')}}`
-
-          fs.writeFileSync(path, this.parseFileContent({ USER }, file))
-        }
-        else {
-          fs.writeFileSync(path, file)
-        }
+        fs.writeFileSync(path, file)
       }
     })
     const jsonFile = { schema: this.schema, env: this.env.map(({ key }) => ({ key, value: "" })) }
@@ -128,17 +131,38 @@ export default class ServerGenerator {
 
   protected async generateDatabaseEntity() {
     this.makeDirectory(`${this.dirr}/database`)
-    let IMPORT = ''
-    const tables = this.schema.tables
-    const ENTITIES = `[${(await Promise.all(tables.map(async table => {
-      const className = _.upperFirst(_.camelCase(table.name))
-      IMPORT += `import { ${className} } from "./entity/${className}"\n`
+    for (const table of this.schema.tables) {
       await this.generateModelEntities(table)
-      return className
-    }))).join(', ')}]`
+    }
+    let IMPORT = ''
+    let DRIVER = ''
+    switch (this.env.find(e => e.key === 'DB_TYPE')?.value) {
+      case 'mariadb':
+        DRIVER = 'MariaDbDriver'
+        IMPORT = `import { ${DRIVER} } from "@mikro-orm/mariadb";`
+        break;
+      case 'mongo':
+        DRIVER = 'MongoDriver'
+        IMPORT = `import { ${DRIVER} } from "@mikro-orm/mongodb";`
+        break;
+      case 'mysql':
+        DRIVER = 'MySqlDriver'
+        IMPORT = `import { ${DRIVER} } from "@mikro-orm/mysql";`
+        break;
+      case 'postgresql':
+        DRIVER = 'PostgreSqlDriver'
+        IMPORT = `import { ${DRIVER} } from "@mikro-orm/postgresql";`
+        break;
+      case 'sqlite':
+      default:
+        DRIVER = 'SqliteDriver'
+        IMPORT = `import { ${DRIVER} } from "@mikro-orm/sqlite";`
+        break;
+    }
+
     const template = fs.readFileSync(`${this.templatePath}/database/index.ts.txt`, { encoding: "utf-8" })
 
-    fs.writeFileSync(`${this.dirr}/database/index.ts`, this.parseFileContent({ IMPORT, ENTITIES }, template), { encoding: 'utf-8' })
+    fs.writeFileSync(`${this.dirr}/database/index.ts`, this.parseFileContent({ IMPORT, DRIVER }, template), { encoding: 'utf-8' })
   }
 
   protected parseFileContent(arg: Record<string, string>, fileContent: string) {

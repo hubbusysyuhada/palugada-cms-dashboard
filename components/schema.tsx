@@ -8,7 +8,7 @@ import Swal from "sweetalert2";
 import _ from 'lodash'
 import ColumnConstrucor from "./column";
 
-export type DataType = "varchar" | "tinytext" | "mediumtext" | "longtext" | "password" | "integer" | "float" | "boolean" | "timestamp" | "uuid" | "autoincrement"
+export type DataType = "varchar" | "tinytext" | "mediumtext" | "longtext" | "password" | "integer" | "float" | "boolean" | "timestamp" | "uuid" | "autoincrement" | "relation"
 export type SqlColumnProps = 'default' | 'defaultType' | 'unique' | 'nullable' | 'primary' | 'index' | 'precision' | 'scale' | 'length' 
 
 export type Column = {
@@ -90,6 +90,7 @@ export default function Schema() {
               type: "uuid",
               primary: true,
               isProtected: true,
+              default: 'uuid()'
             },
             {
               name: "external_id",
@@ -290,6 +291,7 @@ export default function Schema() {
             <MenuItem value={"mediumtext"}>Mediumtext</MenuItem>
             <MenuItem value={"longtext"}>Longtext</MenuItem>
             <MenuItem value={"timestamp"}>Timestamp</MenuItem>
+            {/* <MenuItem value={"relation"}>Relation</MenuItem> */}
           </Select>
         </Box>
         <ColumnConstrucor type={columnType} tableName={tableName} column={{

@@ -4,39 +4,34 @@ import bcrypt from 'fastify-bcrypt'
 import jwt from '@fastify/jwt'
 import cors from '@fastify/cors'
 import routes from './routes'
-import { AppDataSource } from './database'
-import fastifyStatic from '@fastify/static'
+import MikroOrmInstance from './database'
+// import fastifyStatic from '@fastify/static'
 // const path = require('path')
-require('dotenv').config()
 
-type UserJWT = {{!! USER !!}}
+(async () => {
+  const server = fastify()
 
-declare module "@fastify/jwt" {
-  interface FastifyJWT {
-    payload: UserJWT
-    user: UserJWT
-  }
-}
+  const orm = await MikroOrmInstance.init()
+  
+  server.register(bcrypt, { saltWorkFactor: 5 })
+  server.register(routes, { prefix: 'v1' })
+  server.register(jwt, { secret: "secret" })
+  server.decorateRequest('orm', orm)
+  server.decorateRequest('foo', 'bar')
+  // server.register(fastifyStatic, {
+  //   root: path.join(__dirname, 'out'),
+  // })
+  server.register(cors, {
+    origin: (origin, cb) => {
+      if (!origin || new URL(origin).hostname === 'localhost') cb(null, true)
+    }
+  })
 
-const server = fastify()
-
-AppDataSource.initialize()
-server.register(bcrypt, {saltWorkFactor: 5})
-server.register(routes, {prefix: 'v1'})
-server.register(jwt, {secret: "secret"})
-// server.register(fastifyStatic, {
-//   root: path.join(__dirname, 'out'),
-// })
-server.register(cors, {
-  origin:(origin, cb) => {
-    if (!origin || new URL(origin).hostname === 'localhost') cb(null, true)
-  }
-})
-
-server.listen({ port: 8080 }, (err, address) => {
-  if (err) {
-    console.error(err)
-    process.exit(1)
-  }
-  console.log(`Server listening at ${address}`)
-})
+  server.listen({ port: 8080 }, (err, address) => {
+    if (err) {
+      console.error(err)
+      process.exit(1)
+    }
+    console.log(`Server listening at ${address}`)
+  })
+})()

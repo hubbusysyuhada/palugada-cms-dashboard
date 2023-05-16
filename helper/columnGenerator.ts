@@ -6,28 +6,27 @@ export default class ColumnGenerator {
 
   public async autoincrement(returnPrimitive?: boolean) {
     if (returnPrimitive) return 'number'
-    return 'autoincrement'
+    return '' // still in development
   }
 
   public async uuid(returnPrimitive?: boolean) {
     if (returnPrimitive) return 'string'
-    const type = this.column.primary ? 'PrimaryGeneratedColumn' : 'Generated'
-    return `    @orm.${type}('uuid')\n    ${this.column.name}: string;`
+    return `    @orm.PrimaryKey({type: "uuid"})\n    ${this.column.name}: string${this.column.default ? ` = ${this.column.default}`: ''};`
   }
 
   public async boolean(returnPrimitive?: boolean) {
     if (returnPrimitive) return 'boolean'
-    return `    @orm.Column({ type: '${this.column.type}' })\n    ${this.column.name}: boolean = ${this.column.default == 'true'};`
+    return `    @orm.Property({ type: '${this.column.type}' })\n    ${this.column.name}: boolean = ${this.column.default == 'true'};`
   }
 
   public async float(returnPrimitive?: boolean) {
     if (returnPrimitive) return 'number'
-    return `    @orm.Column('decimal', { precision: ${this.column.precision}, scale: ${this.column.scale}${this.column.unique && !this.column.default ? ', unique: true' : ''} })\n    ${this.column.name}${this.column.nullable && !this.column.default ? '?' : ''}: number${this.column.default ? ' = ' + this.column.default : ''};`
+    return `    @orm.Property('decimal', { precision: ${this.column.precision}, scale: ${this.column.scale}${this.column.unique && !this.column.default ? ', unique: true' : ''} })\n    ${this.column.name}${this.column.nullable && !this.column.default ? '?' : ''}: number${this.column.default ? ' = ' + this.column.default : ''};`
   }
 
   public async integer(returnPrimitive?: boolean) {
     if (returnPrimitive) return 'number'
-    return `    @orm.Column({ type: '${this.column.type}'${this.column.unique && !this.column.default ? ', unique: true' : ''} })\n    ${this.column.name}${this.column.nullable && !this.column.default ? '?' : ''}: number${this.column.default ? ' = ' + this.column.default : ''};`
+    return `    @orm.Property({ type: '${this.column.type}'${this.column.unique && !this.column.default ? ', unique: true' : ''} })\n    ${this.column.name}${this.column.nullable && !this.column.default ? '?' : ''}: number${this.column.default ? ' = ' + this.column.default : ''};`
   }
 
   public async password(returnPrimitive?: boolean) {
@@ -41,12 +40,12 @@ export default class ColumnGenerator {
 
   public async text(returnPrimitive?: boolean) {
     if (returnPrimitive) return 'string'
-    return `    @orm.Column({ type: '${this.column.type}' })\n    ${this.column.name}${this.column.nullable && !this.column.default ? '?' : ''}: string${this.column.default ? ' = ' + this.column.default : ''};`
+    return `    @orm.Property({ type: '${this.column.type}' })\n    ${this.column.name}?: string;`
   }
 
   public async timestamp(returnPrimitive?: boolean) {
     if (returnPrimitive) return 'Date'
-    return `    @orm.Column({ type: '${this.column.type}' })\n    ${this.column.name}${this.column.nullable && !this.column.default ? '?' : ''}: Date${this.column.default ? ' = ' + this.column.default : ''};`
+    return `    @orm.Property({ type: 'timestamp with timezone' })\n    ${this.column.name}${this.column.nullable && !this.column.default ? '?' : ''}: Date${this.column.default ? ' = ' + this.column.default : ''};`
   }
 
   public async tinytext(returnPrimitive?: boolean) {
@@ -62,6 +61,11 @@ export default class ColumnGenerator {
   }
 
   public async varchar(returnPrimitive?: boolean) {
-    return `    @orm.Column({ type: 'varchar', length: '${this.column.length}'${this.column.unique && !this.column.default ? ', unique: true' : ''} })\n    ${this.column.name}${this.column.nullable && !this.column.default ? '?' : ''}: string${this.column.default ? ' = ' + this.column.default : ''};`
+    return `    @orm.Property({ type: 'varchar', length: ${this.column.length}${this.column.unique && !this.column.default ? ', unique: true' : ''} })\n    ${this.column.name}${this.column.nullable && !this.column.default ? '?' : ''}: string${this.column.default ? ' = ' + this.column.default : ''};`
+  }
+
+  public async relation(returnPrimitive?: boolean) {
+    return ''
+    // return `    @orm.Property({ type: 'varchar', length: '${this.column.length}'${this.column.unique && !this.column.default ? ', unique: true' : ''} })\n    ${this.column.name}${this.column.nullable && !this.column.default ? '?' : ''}: string${this.column.default ? ' = ' + this.column.default : ''};`
   }
 }

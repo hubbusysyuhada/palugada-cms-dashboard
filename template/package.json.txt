@@ -6,8 +6,7 @@
    "scripts": {
       "build": "tsc -p tsconfig.json",
       "start": "ts-node src/index.ts",
-      "watch": "npx nodemon index.ts",
-      "typeorm": "typeorm-ts-node-commonjs"
+      "watch": "npx nodemon index.ts"
    },
    "author": "Mandoor Server Generator",
    "license": "ISC",
@@ -16,17 +15,23 @@
       "@fastify/jwt": "^6.5.0",
       "@fastify/static": "^6.10.0",
       "@fastify/type-provider-typebox": "^2.4.0",
+      "@mikro-orm/core": "^5.7.6",
+      "@mikro-orm/mariadb": "^5.7.6",
+      "@mikro-orm/mongodb": "^5.7.6",
+      "@mikro-orm/mysql": "^5.7.6",
+      "@mikro-orm/postgresql": "^5.7.6",
+      "@mikro-orm/reflection": "^5.7.6",
+      "@mikro-orm/sqlite": "^5.7.6",
       "@sinclair/typebox": "^0.25.23",
+      "@types/qs": "^6.9.7",
+      "@types/uuid": "^9.0.1",
       "dotenv": "^16.0.3",
       "fastify": "^4.13.0",
       "fastify-bcrypt": "^1.0.1",
       "lodash": "^4.17.21",
-      "mysql2": "^3.1.2",
-      "pg": "^8.4.0",
+      "qs": "^6.11.1",
       "reflect-metadata": "^0.1.13",
-      "typeorm": "0.3.12",
-      "@types/qs": "^6.9.7",
-      "qs": "^6.11.1"
+      "uuid": "^9.0.0"
    },
    "devDependencies": {
       "@types/lodash": "^4.14.191",
