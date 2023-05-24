@@ -526,7 +526,7 @@ export default function Schema() {
 
   const renderColumnType = (column: Column) => {
     if (column.primary) return "PRIMARY"
-    else if (column.type === 'relation' && column.relation?.relationType !== 'OneToOne' && column.relation?.isOwner) return "collection"
+    else if (column.type === 'relation' && column.relation?.relationType !== 'OneToOne' && column.relation?.isOwner || column.relation?.relationType === 'ManyToMany') return "collection"
     return column.type
   }
 

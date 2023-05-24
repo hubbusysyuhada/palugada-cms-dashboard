@@ -221,7 +221,7 @@ const manyToMany: RelationConstructorType = {
       type: "relation",
       relation: {
         relationType: "ManyToMany",
-        isOwner: true,
+        isOwner: false,
         targetTable: oppositeTableIndex,
         targetColumn: schema.tables[oppositeTableIndex].columns.length,
         onUpdate,
