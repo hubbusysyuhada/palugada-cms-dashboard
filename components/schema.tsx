@@ -6,11 +6,20 @@ import React, { useEffect, useState } from "react"
 import styles from 'styles/Schema.module.scss'
 import Swal from "sweetalert2";
 import _ from 'lodash'
-import ColumnConstrucor from "./column";
+import ColumnConstrucor, { ColumnBaseType } from "./column";
+import { FKActionType, RelationType } from "./column/relation";
+import RelationConstructor, { RelationConstructorType } from "./column/RelationConstructor";
 
 export type DataType = "varchar" | "tinytext" | "mediumtext" | "longtext" | "password" | "integer" | "float" | "boolean" | "timestamp" | "uuid" | "autoincrement" | "relation"
-export type SqlColumnProps = 'default' | 'defaultType' | 'unique' | 'nullable' | 'primary' | 'index' | 'precision' | 'scale' | 'length' 
-
+export type SqlColumnProps = 'default' | 'defaultType' | 'unique' | 'nullable' | 'primary' | 'index' | 'precision' | 'scale' | 'length'
+export type Relation = {
+  relationType: 'ManyToOne' | 'OneToMany' | 'OneToOne' | 'ManyToMany';
+  isOwner: boolean;
+  targetTable: number;
+  targetColumn: number;
+  onUpdate: FKActionType;
+  onDelete: FKActionType
+}
 export type Column = {
   name: string;
   type: DataType;
@@ -26,6 +35,8 @@ export type Column = {
 
   scale?: number;
   precision?: number;
+
+  relation?: Relation
 
   isProtected?: boolean;
   error?: string
@@ -77,7 +88,11 @@ export default function Schema() {
   const precision = useState<number | null>(null)
   const scale = useState<number | null>(null)
   const length = useState<number | null>(null)
-
+  const onDelete = useState<FKActionType>('NO ACTION')
+  const onUpdate = useState<FKActionType>('NO ACTION')
+  const targetTable = useState<number | undefined | null>(null)
+  const collectionColumn = useState('')
+  const relationType = useState<RelationType>('One to One')
 
   useEffect(() => {
     const initialState: Schema = {
@@ -197,7 +212,8 @@ export default function Schema() {
     setLocalStorage({ "SCHEMA": JSON.stringify(newSchema) })
   }
 
-  const deleteTable = async (tableName: string) => {
+  const deleteTable = async (index: number) => {
+    const tableName = schema.tables[index].name
     const { isConfirmed } = await Swal.fire({
       title: `Delete table ${tableName}?`,
       text: "You won't be able to revert this!",
@@ -208,7 +224,8 @@ export default function Schema() {
       confirmButtonText: 'Yes, delete it!'
     })
     if (isConfirmed) {
-      const tables = schema.tables.filter(v => v.name !== tableName)
+      const tables = schema.tables
+      schema.tables.splice(index, 1)
       const newSchema = { ...schema, tables }
       setSchema(newSchema)
       setLocalStorage({ "SCHEMA": JSON.stringify(newSchema) })
@@ -225,15 +242,17 @@ export default function Schema() {
     return (
       <>
         <TextField value={tableName} variant="standard" type={'text'} InputProps={{ disableUnderline: true, readOnly: schema.tables[index].isProtected, style: { color: "#dbdbdb" } }} onChange={e => { renameTable(e.target.value.replaceAll(' ', '_'), index) }} onClick={e => e.stopPropagation()} error={!!errorMsg} label={errorMsg} />
-        {!isProtected && <Delete style={{ height: "16px", width: "16px", color: "#be2b2b" }} onClick={async e => {
-          e.stopPropagation()
-          await deleteTable(tableName)
-        }} />}
-        {isOpen ?
-          <KeyboardArrowUp style={{ height: "18px", width: "18px", color: "white" }} />
-          :
-          <KeyboardArrowDown style={{ height: "18px", width: "18px", color: "white" }} />
-        }
+        <Box display={"flex"} >
+          {!isProtected && <Delete style={{ height: "16px", width: "16px", color: "#be2b2b", marginRight: "10px" }} onClick={async e => {
+            e.stopPropagation()
+            await deleteTable(index)
+          }} />}
+          {isOpen ?
+            <KeyboardArrowUp style={{ height: "18px", width: "18px", color: "white" }} />
+            :
+            <KeyboardArrowDown style={{ height: "18px", width: "18px", color: "white" }} />
+          }
+        </Box>
       </>
     )
   }
@@ -244,6 +263,25 @@ export default function Schema() {
   }
 
   const showEditColumnModal = (tableIndex: number, column: Column) => {
+    if (column.type === 'relation') {
+      
+      if (column.relation?.isOwner) {
+        tableIndex = column.relation.targetTable
+        column = schema.tables[column.relation.targetTable].columns[column.relation.targetColumn]
+      }
+      switch (column.relation?.relationType) {
+        case 'ManyToMany':
+          relationType[1]('Many to Many')
+          break;
+        case 'OneToOne':
+          relationType[1]('One to One')
+          break;
+        default:
+          relationType[1]('One to Many')
+          break;
+      }
+    }
+
     setShowColumnModal(true)
     setColumnTableId(tableIndex)
     setIsEditColumn(true)
@@ -262,16 +300,28 @@ export default function Schema() {
         booleans[key as keyof typeof booleans][1](column[v] as boolean)
       }
     }
-
   }
 
-  const renderEditCreateColumn = (tableName: string) => {
+  const renderEditCreateColumn = (tableIndex: number) => {
+    const column = {
+      ...schema.tables[tableIndex]?.columns.find(c => c.name === editColumnName),
+      default: defaultValue,
+      defaultType,
+      index,
+      nullable,
+      primary,
+      unique,
+      precision,
+      scale,
+      length
+    } as ColumnBaseType
+
     return (
       <Box display={"flex"} justifyContent={"start"} alignContent={"space-between"} alignItems={"center"} flexDirection={"column"} width={"100%"}>
         <Box display={"flex"} alignItems={"center"} marginY={"10px"} width={"70%"} justifyContent={"space-between"}>
           <TextField className={styles['input-label']} value={"Name"} variant="standard" type={'text'} InputProps={{ disableUnderline: true, readOnly: true }} />
           <p>:</p>
-          <TextField className={styles.input} placeholder="Column Name" value={columnName} variant="standard" type={'text'} InputProps={{ disableUnderline: false }} onChange={e => { setColumnName(e.target.value.toLowerCase().replaceAll(' ', '_')) }} />
+          <TextField className={styles.input} placeholder="Column Name" value={columnName} variant="standard" type={'text'} InputProps={{ disableUnderline: false }} onChange={e => { setColumnName(e.target.value.toLowerCase().replaceAll(' ', '_')) }} disabled={columnType === 'relation' && isEditColumn} />
         </Box>
         <Box display={"flex"} alignItems={"center"} marginY={"10px"} width={"70%"} justifyContent={"space-between"}>
           <TextField className={styles['input-label']} value={"Column Type"} variant="standard" type={'text'} InputProps={{ disableUnderline: true, readOnly: true }} />
@@ -282,6 +332,8 @@ export default function Schema() {
             value={columnType}
             label="Column Type"
             onChange={e => setColumnType(e.target.value as DataType)}
+            MenuProps={{ style: { maxHeight: "250px" } }}
+            disabled={isEditColumn}
           >
             <MenuItem value={"boolean"}>Boolean</MenuItem>
             <MenuItem value={"integer"}>Integer</MenuItem>
@@ -291,12 +343,10 @@ export default function Schema() {
             <MenuItem value={"mediumtext"}>Mediumtext</MenuItem>
             <MenuItem value={"longtext"}>Longtext</MenuItem>
             <MenuItem value={"timestamp"}>Timestamp</MenuItem>
-            {/* <MenuItem value={"relation"}>Relation</MenuItem> */}
+            <MenuItem value={"relation"}>Relation</MenuItem>
           </Select>
         </Box>
-        <ColumnConstrucor type={columnType} tableName={tableName} column={{
-          default: defaultValue, defaultType, index, nullable, primary, unique, precision, scale, length
-        }} isEdit={isEditColumn} columnRule={setColumnRulePassed} />
+        <ColumnConstrucor type={columnType} tableIndex={tableIndex} column={column} relationProps={{ onUpdate, onDelete, targetTable, collectionColumn, relationType }} isEdit={isEditColumn} columnRule={setColumnRulePassed} />
       </Box>
     )
   }
@@ -313,6 +363,11 @@ export default function Schema() {
     primary[1](false)
     autoIncrement[1](false)
     index[1](false)
+    onDelete[1]('NO ACTION')
+    onUpdate[1]('NO ACTION')
+    targetTable[1](null)
+    collectionColumn[1]('')
+    relationType[1]('One to One')
   }
 
   const closeModal = () => {
@@ -320,23 +375,36 @@ export default function Schema() {
     setShowColumnModal(false)
   }
 
-  const createColumn = () => {
-    const column: Column = {
-      name: columnName,
-      type: columnType,
-      isProtected: false,
-      default: defaultValue[0],
-      defaultType: defaultType[0],
-      autoIncrement: autoIncrement[0],
-      index: index[0],
-      nullable: nullable[0],
-      primary: primary[0],
-      unique: unique[0],
-      length: length[0] || 0,
+  const createColumn = async () => {
+    let tables: Table[] = JSON.parse(JSON.stringify(schema.tables))
+    if (columnType === 'relation') {
+      const type = _.camelCase(relationType[0]) as keyof typeof RelationConstructor
+      const data = await RelationConstructor[type].create({
+        columnName,
+        schema,
+        onDelete: onDelete[0],
+        onUpdate: onUpdate[0],
+        targetTableIndex: targetTable[0] as number,
+        oppositeColumnName: collectionColumn[0],
+        oppositeTableIndex: columnTableId,
+      })
+      tables = data.tables
+    } else {
+      const column: Column = {
+        name: columnName,
+        type: columnType,
+        isProtected: false,
+        default: defaultValue[0],
+        defaultType: defaultType[0],
+        autoIncrement: autoIncrement[0],
+        index: index[0],
+        nullable: nullable[0],
+        primary: primary[0],
+        unique: unique[0],
+        length: length[0] || 0,
+      }
+      tables[columnTableId].columns.push(column)
     }
-
-    const tables = JSON.parse(JSON.stringify(schema.tables))
-    tables[columnTableId].columns.push(column)
     const newSchema = { ...schema, tables }
     setSchema(newSchema)
     setLocalStorage({ "SCHEMA": JSON.stringify(newSchema) })
@@ -347,33 +415,55 @@ export default function Schema() {
   const deleteColumn = async () => {
     setShowColumnModal(false)
     const tables = schema.tables
-    const tableName = tables[columnTableId].name
-    const { isConfirmed } = await Swal.fire({
-      title: `Delete column ${editColumnName} in table ${tableName}?`,
-      text: "You won't be able to revert this!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!'
-    })
-    if (isConfirmed) {
-      tables[columnTableId].columns = tables[columnTableId].columns.filter(c => c.name !== editColumnName)
-      const newSchema = { ...schema, tables }
-      setSchema(newSchema)
-      setLocalStorage({ "SCHEMA": JSON.stringify(newSchema) })
-      Swal.fire(
-        'Deleted!',
-        `Column ${editColumnName} in table ${tableName} has been deleted.`,
-        'success'
-      )
+    const column = tables[columnTableId].columns.find(c => c.name === editColumnName)
+    if (column?.type === 'relation') {
+      const type = _.camelCase(relationType[0]) as keyof typeof RelationConstructor
+      const { isConfirmed, schema: deletedSchema } = await RelationConstructor[type].delete({
+        columnName,
+        schema,
+        column,
+        onDelete: onDelete[0],
+        onUpdate: onUpdate[0],
+        targetTableIndex: targetTable[0] as number,
+        oppositeColumnName: collectionColumn[0],
+        oppositeTableIndex: columnTableId,
+      })
+      if (isConfirmed) {
+        const newSchema = { ...deletedSchema, tables }
+        setSchema(newSchema)
+        setLocalStorage({ "SCHEMA": JSON.stringify(newSchema) })
+      }
+      else setShowColumnModal(true)
     }
     else {
-      setShowColumnModal(true)
+      const tableName = tables[columnTableId].name
+      const { isConfirmed } = await Swal.fire({
+        title: `Delete column ${editColumnName} in table ${tableName}?`,
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      })
+      if (isConfirmed) {
+        tables[columnTableId].columns = tables[columnTableId].columns.filter(c => c.name !== editColumnName)
+        const newSchema = { ...schema, tables }
+        setSchema(newSchema)
+        setLocalStorage({ "SCHEMA": JSON.stringify(newSchema) })
+        Swal.fire(
+          'Deleted!',
+          `Column ${editColumnName} in table ${tableName} has been deleted.`,
+          'success'
+        )
+      }
+      else {
+        setShowColumnModal(true)
+      }
     }
   }
 
-  const updateColumn = () => {
+  const updateColumn = async () => {
     const column: Column = {
       name: columnName,
       type: columnType,
@@ -387,16 +477,33 @@ export default function Schema() {
       unique: unique[0],
       length: length[0] || 0,
     }
-
-    const tables = schema.tables
-    tables[columnTableId].columns = tables[columnTableId].columns.map(c => {
-      if (c.name === editColumnName) return column
-      return c
-    })
-    const newSchema = { ...schema, tables }
-    setSchema(newSchema)
-    setLocalStorage({ "SCHEMA": JSON.stringify(newSchema) })
-    setShowColumnModal(false)
+    if (columnType === 'relation') {
+      const type = _.camelCase(relationType[0]) as keyof typeof RelationConstructor
+      const data = await RelationConstructor[type].update({
+        columnName,
+        schema,
+        onDelete: onDelete[0],
+        onUpdate: onUpdate[0],
+        targetTableIndex: targetTable[0] as number,
+        oppositeColumnName: collectionColumn[0],
+        oppositeTableIndex: columnTableId,
+        originalColumnName: editColumnName
+      })
+      setSchema({...data})
+      setLocalStorage({ "SCHEMA": JSON.stringify({...data}) })
+      setShowColumnModal(false)
+    }
+    else {
+      const tables = schema.tables
+      tables[columnTableId].columns = tables[columnTableId].columns.map(c => {
+        if (c.name === editColumnName) return column
+        return c
+      })
+      const newSchema = { ...schema, tables }
+      setSchema(newSchema)
+      setLocalStorage({ "SCHEMA": JSON.stringify(newSchema) })
+      setShowColumnModal(false)
+    }
   }
 
   const renderModalBtnGroup = () => {
@@ -415,6 +522,12 @@ export default function Schema() {
         <Button variant="contained" color="error" onClick={deleteColumn}>Delete</Button>
       </Box>
     )
+  }
+
+  const renderColumnType = (column: Column) => {
+    if (column.primary) return "PRIMARY"
+    else if (column.type === 'relation' && column.relation?.relationType !== 'OneToOne' && column.relation?.isOwner) return "collection"
+    return column.type
   }
 
   return (
@@ -447,7 +560,7 @@ export default function Schema() {
                     </div>
                     {t.columns.map((c, j) => (
                       <div className={styles['column-item']} key={j}>
-                        <p style={{ margin: 0 }}>{c.name} <i><b>({c.primary ? "PRIMARY" : c.type})</b></i></p>
+                        <p style={{ margin: 0 }}>{c.name} <i><b>({renderColumnType(c)})</b></i></p>
                         <IconButton
                           size='small'
                           onClick={() => {
@@ -480,7 +593,7 @@ export default function Schema() {
       }}>
         <Box sx={modalStyle}>
           <Box display={"flex"} justifyContent={"start"} alignContent={"space-around"} alignItems={"center"} flexDirection={"column"}>
-            {renderEditCreateColumn(schema.tables[columnTableId]?.name)}
+            {renderEditCreateColumn(columnTableId)}
             {renderModalBtnGroup()}
           </Box>
         </Box>
