@@ -74,7 +74,7 @@ export default function RelationConstructor(props: RelationColumnState) {
           onChange={e => setOnUpdate(e.target.value as FKActionType)}
           disabled={props.isEdit}
         >
-          {fkActions.map(v => <MenuItem value={v}>{v}</MenuItem>)}
+          {fkActions.map((v, i) => <MenuItem key={i} value={v}>{v}</MenuItem>)}
         </Select>
       </Box>
       <Box display={"flex"} alignItems={"center"} marginY={"10px"} width={"70%"} justifyContent={"space-between"}>
@@ -87,7 +87,7 @@ export default function RelationConstructor(props: RelationColumnState) {
           onChange={e => setOnDelete(e.target.value as FKActionType)}
           disabled={props.isEdit}
         >
-          {fkActions.map(v => <MenuItem value={v}>{v}</MenuItem>)}
+          {fkActions.map((v, i) => <MenuItem key={i} value={v}>{v}</MenuItem>)}
         </Select>
       </Box>
     </>
@@ -114,7 +114,7 @@ export default function RelationConstructor(props: RelationColumnState) {
               MenuProps={{ style: { maxHeight: "250px" } }}
               disabled={props.isEdit}
             >
-              {parsedSchema.tables.filter(t => t.name !== parsedSchema.tables[props.tableIndex].name).map((t, i) => <MenuItem value={i}>{t.name}</MenuItem>)}
+              {parsedSchema.tables.filter(t => t.name !== parsedSchema.tables[props.tableIndex].name).map((t, i) => <MenuItem key={i} value={i}>{t.name}</MenuItem>)}
             </Select>
           </Box>
           <Box display={"flex"} alignItems={"center"} marginY={"10px"} width={"70%"} justifyContent={"space-between"}>
@@ -138,7 +138,7 @@ export default function RelationConstructor(props: RelationColumnState) {
               MenuProps={{ style: { maxHeight: "250px" } }}
               disabled={props.isEdit}
             >
-              {parsedSchema.tables.filter(t => t.name !== parsedSchema.tables[props.tableIndex].name).map((t, i) => <MenuItem value={i}>{t.name}</MenuItem>)}
+              {parsedSchema.tables.filter(t => t.name !== parsedSchema.tables[props.tableIndex].name).map((t, i) => <MenuItem key={i} value={i}>{t.name}</MenuItem>)}
             </Select>
           </Box>
           <Box display={"flex"} alignItems={"center"} marginY={"10px"} width={"70%"} justifyContent={"space-between"}>
@@ -183,7 +183,7 @@ export default function RelationConstructor(props: RelationColumnState) {
               MenuProps={{ style: { maxHeight: "250px" } }}
               disabled={props.isEdit}
             >
-              {parsedSchema.tables.filter(t => t.name !== parsedSchema.tables[props.tableIndex].name).map((t, i) => <MenuItem value={i}>{t.name}</MenuItem>)}
+              {parsedSchema.tables.filter(t => t.name !== parsedSchema.tables[props.tableIndex].name).map((t, i) => <MenuItem key={i} value={i}>{t.name}</MenuItem>)}
             </Select>
           </Box>
           <Box display={"flex"} alignItems={"center"} marginY={"10px"} width={"70%"} justifyContent={"space-between"}>
