@@ -4,7 +4,7 @@ import { RelationColumnState } from ".";
 import { useEffect, useState } from "react";
 import { Schema } from "../schema";
 
-export type FKActionType = 'RESTRICT' | 'CASCADE' | 'SET NULL' | 'NO ACTION'
+export type FKActionType = 'CASCADE' | 'SET NULL' | 'NO ACTION'
 export type RelationType = 'One to One' | 'One to Many' | 'Many to Many'
 
 export default function RelationConstructor(props: RelationColumnState) {
@@ -17,7 +17,7 @@ export default function RelationConstructor(props: RelationColumnState) {
   } = props.relationProps
 
   const parsedSchema: Schema = JSON.parse(localStorage.getItem('SCHEMA') || '{ tables: [] }')
-  const fkActions: FKActionType[] = ['RESTRICT', 'CASCADE', 'SET NULL', 'NO ACTION']
+  const fkActions: FKActionType[] = ['CASCADE', 'SET NULL', 'NO ACTION']
   const [createOppositeColumn, setCreateOppositeColumn] = useState(true)
   const [isOppositeColumnError, setIsOppositeColumnError] = useState(false)
   const [oppositeErrorMessage, setOppositeErrorMessage] = useState('')
@@ -29,7 +29,7 @@ export default function RelationConstructor(props: RelationColumnState) {
       const { relation } = props.column
       const isHavingOppositeColumn = !!props.column.relation.targetColumn
       setSecondTable(relation.targetTable)
-      
+
       if (isHavingOppositeColumn) {
         const oppositeTable = parsedSchema.tables[relation.targetTable]
         const oppositeColumn = oppositeTable.columns[relation.targetColumn]
@@ -114,7 +114,7 @@ export default function RelationConstructor(props: RelationColumnState) {
               MenuProps={{ style: { maxHeight: "250px" } }}
               disabled={props.isEdit}
             >
-              {parsedSchema.tables.filter(t => t.name !== parsedSchema.tables[props.tableIndex].name).map((t, i) => <MenuItem key={i} value={i}>{t.name}</MenuItem>)}
+              {parsedSchema.tables.map((t, i) => t.name !== parsedSchema.tables[props.tableIndex].name && <MenuItem key={i} value={i}>{t.name}</MenuItem>)}
             </Select>
           </Box>
           <Box display={"flex"} alignItems={"center"} marginY={"10px"} width={"70%"} justifyContent={"space-between"}>
@@ -138,7 +138,7 @@ export default function RelationConstructor(props: RelationColumnState) {
               MenuProps={{ style: { maxHeight: "250px" } }}
               disabled={props.isEdit}
             >
-              {parsedSchema.tables.filter(t => t.name !== parsedSchema.tables[props.tableIndex].name).map((t, i) => <MenuItem key={i} value={i}>{t.name}</MenuItem>)}
+              {parsedSchema.tables.map((t, i) => t.name !== parsedSchema.tables[props.tableIndex].name && <MenuItem key={i} value={i}>{t.name}</MenuItem>)}
             </Select>
           </Box>
           <Box display={"flex"} alignItems={"center"} marginY={"10px"} width={"70%"} justifyContent={"space-between"}>
@@ -183,13 +183,13 @@ export default function RelationConstructor(props: RelationColumnState) {
               MenuProps={{ style: { maxHeight: "250px" } }}
               disabled={props.isEdit}
             >
-              {parsedSchema.tables.filter(t => t.name !== parsedSchema.tables[props.tableIndex].name).map((t, i) => <MenuItem key={i} value={i}>{t.name}</MenuItem>)}
+              {parsedSchema.tables.map((t, i) => t.name !== parsedSchema.tables[props.tableIndex].name && <MenuItem key={i} value={i}>{t.name}</MenuItem>)}
             </Select>
           </Box>
           <Box display={"flex"} alignItems={"center"} marginY={"10px"} width={"70%"} justifyContent={"space-between"}>
             <TextField className={styles['input-label']} value={"Collection Name"} variant="standard" type={'text'} InputProps={{ disableUnderline: true, readOnly: true }} />
             <p>:</p>
-            <TextField className={styles.input} placeholder="Collection Name" value={oppositeName} variant="standard" type={'text'} InputProps={{ disableUnderline: false }} onChange={e => { setOppositeName(e.target.value.toLowerCase().replaceAll(' ', '_')) }} label={oppositeErrorMessage} error={isOppositeColumnError} disabled={props.isEdit}/>
+            <TextField className={styles.input} placeholder="Collection Name" value={oppositeName} variant="standard" type={'text'} InputProps={{ disableUnderline: false }} onChange={e => { setOppositeName(e.target.value.toLowerCase().replaceAll(' ', '_')) }} label={oppositeErrorMessage} error={isOppositeColumnError} disabled={props.isEdit} />
           </Box>
           {renderFKRules()}
         </>

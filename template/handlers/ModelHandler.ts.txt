@@ -1,12 +1,12 @@
 import * as qs from "qs"
 import { FastifyReply, FastifyRequest } from "fastify";
-import {{!! MODEL !!}} from "../database/entity/{{!! MODEL !!}}";
+import {{!! MODEL !!}}, { relationColumns } from "../database/entity/{{!! MODEL !!}}";
 
 export default class {
   static async findAll(req: FastifyRequest, rep: FastifyReply) {
     // const {  } = qs.parse(req.query as string) as QueryProps
     const entityManager = await req.orm.getEm()
-    const data = await entityManager.find({{!! MODEL !!}}, {})
+    const data = await entityManager.find({{!! MODEL !!}}, { populate: relationColumns })
     rep.code(200).send({ data })
   }
 
@@ -14,7 +14,7 @@ export default class {
     // const {  } = qs.parse(req.query as string) as QueryProps
     const entityManager = await req.orm.getEm()
     const id = req.params.id
-    const data = await entityManager.findOne({{!! MODEL !!}}, { id })
+    const data = await entityManager.findOne({{!! MODEL !!}}, { id }, { populate: relationColumns })
     rep.code(200).send({ data })
   }
 

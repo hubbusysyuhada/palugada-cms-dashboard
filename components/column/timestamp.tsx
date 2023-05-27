@@ -19,7 +19,7 @@ export default function TimestampConstructor(props: ColumnState) {
     if (!props.isEdit) {
       setDefaultValue("")
       setDefaultType("value")
-      setNullable("true")
+      setNullable(true)
     }
     if (defaultValue) {
       setHaveDefault(true)
@@ -33,7 +33,7 @@ export default function TimestampConstructor(props: ColumnState) {
 
   const changeDefault = () => {
     if (!haveDefault) {
-      setNullable("false")
+      setNullable(false)
     }
     else {
       setDefaultType("value")

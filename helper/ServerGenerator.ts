@@ -6,12 +6,15 @@ import { zip } from 'zip-a-folder';
 import _ from 'lodash'
 import ColumnGenerator from "./columnGenerator";
 import path from "path";
+import { FKActionType } from "@/components/column/relation";
 
 export default class ServerGenerator {
   protected env: EnvObj[]
   protected schema: Schema
-  protected dirr = '/tmp/mandoor-generated-server'
-  protected zipPath = '/tmp/mandoor-generated-server.zip'
+  protected dirr = 'mandoor-generated-server'
+  protected zipPath = 'mandoor-generated-server.zip'
+  // protected dirr = '/tmp/mandoor-generated-server'
+  // protected zipPath = '/tmp/mandoor-generated-server.zip'
   protected templatePath = path.join(process.cwd(), 'template')
 
   constructor(body: RequestBody) {
@@ -89,13 +92,13 @@ export default class ServerGenerator {
       "timestamp": "Date",
       "uuid": "string",
       "autoincrement": "number",
-      "relation": "any"
+      "relation": "string"
     }
 
     this.makeDirectory(`${this.dirr}/@types`)
     this.makeDirectory(`${this.dirr}/@types/fastify`)
     const template = fs.readFileSync(this.templatePath + '/@types/fastify/index.d.ts.txt', { encoding: "utf-8" })
-    const USER = `{\n${userColumns.filter(c => c.type !== 'password').map(c => `  ${c.name}: ${columnType[c.type]};\n`).join('')}}`
+    const USER = `{\n${userColumns.filter(c => !['password', 'relation'].includes(c.type)).map(c => `  ${c.name}: ${columnType[c.type]};\n`).join('')}}`
     fs.writeFileSync(`${this.dirr}/@types/fastify/index.d.ts`, this.parseFileContent({ USER }, template))
   }
 
@@ -179,18 +182,22 @@ export default class ServerGenerator {
     const TABLENAME = table.name
     const CLASSNAME = _.upperFirst(_.camelCase(table.name))
 
+    const relationTables: string[] = []
+    const relationColumns: string[] = []
+
     const COLUMN = (await Promise.all(table.columns.map(async column => {
-      return await new ColumnGenerator(column)[column.type]()
+      if (column.type === 'relation') {
+        relationColumns.push(column.name)
+        const targetTable = _.upperFirst(_.camelCase(this.schema.tables[column.relation?.targetTable as number].name))
+        if (!relationTables.includes(targetTable)) relationTables.push(targetTable)
+      }
+      return await new ColumnGenerator(column)[column.type](false, { tableName: table.name, tables: this.schema.tables })
     }))).join('\n\n')
+    const RELATION_COLUMNS = `[${relationColumns.map(c => `'${c}'`)}]`
+    
+    const IMPORT_RELATION = relationTables.map(v => `import ${v} from './${v}';`).join('\n')
 
-    const COLUMN_RESPONSE: string[] = []
-
-    const CLASS_PROPS = (await Promise.all(table.columns.map(async column => {
-      COLUMN_RESPONSE.push(`model['${column.name}'],`)
-      return `\n        private ${column.name}: ${await new ColumnGenerator(column)[column.type](true)}`
-    }))).join(',') + '\n'
-
-    fs.writeFileSync(`${this.dirr}/database/entity/${CLASSNAME}.ts`, this.parseFileContent({ TABLENAME, CLASSNAME, COLUMN, CLASS_PROPS, COLUMN_RESPONSE: COLUMN_RESPONSE.join('\n        ') }, template), { encoding: 'utf-8' })
+    fs.writeFileSync(`${this.dirr}/database/entity/${CLASSNAME}.ts`, this.parseFileContent({ TABLENAME, CLASSNAME, COLUMN, IMPORT_RELATION, RELATION_COLUMNS }, template), { encoding: 'utf-8' })
   }
 
   protected async makeDirectory(dir?: string) {

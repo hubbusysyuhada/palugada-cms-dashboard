@@ -1,6 +1,6 @@
 import * as qs from "qs"
 import { FastifyReply, FastifyRequest } from "fastify";
-import User from "../database/entity/User";
+import User, { relationColumns } from "../database/entity/User";
 import { UserJWT } from "../@types/fastify";
 
 export default class {

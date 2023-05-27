@@ -27,9 +27,9 @@ export default function FloatConstructor(props: ColumnState) {
     if (!props.isEdit) {
       setDefaultValue("")
       setDefaultType("value")
-      setNullable("true")
-      setUnique("false")
-      setIndex("false")
+      setNullable(true)
+      setUnique(false)
+      setIndex(false)
       // 123.45 has a precision of 5 and a scale of 2
       setPrecision(10)
       setScale(1)
@@ -49,8 +49,8 @@ export default function FloatConstructor(props: ColumnState) {
 
   const changeDefault = () => {
     if (!haveDefault) {
-      setNullable("false")
-      setUnique("false")
+      setNullable(false)
+      setUnique(false)
     }
     else {
       setDefaultType("value")

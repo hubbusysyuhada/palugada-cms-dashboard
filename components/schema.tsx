@@ -80,11 +80,11 @@ export default function Schema() {
   const [columnType, setColumnType] = useState<DataType>("boolean")
   const defaultValue = useState("")
   const defaultType = useState<"expression" | "value">("value")
-  const unique = useState(false)
-  const nullable = useState(true)
-  const primary = useState(false)
-  const autoIncrement = useState(false)
-  const index = useState(false)
+  const unique = useState<boolean>(false)
+  const nullable = useState<boolean>(true)
+  const primary = useState<boolean>(false)
+  const autoIncrement = useState<boolean>(false)
+  const index = useState<boolean>(false)
   const precision = useState<number | null>(null)
   const scale = useState<number | null>(null)
   const length = useState<number | null>(null)
@@ -171,6 +171,7 @@ export default function Schema() {
           type: "uuid",
           primary: true,
           isProtected: true,
+          default: 'uuid()'
         },
         {
           name: "created_at",
@@ -321,7 +322,7 @@ export default function Schema() {
         <Box display={"flex"} alignItems={"center"} marginY={"10px"} width={"70%"} justifyContent={"space-between"}>
           <TextField className={styles['input-label']} value={"Name"} variant="standard" type={'text'} InputProps={{ disableUnderline: true, readOnly: true }} />
           <p>:</p>
-          <TextField className={styles.input} placeholder="Column Name" value={columnName} variant="standard" type={'text'} InputProps={{ disableUnderline: false }} onChange={e => { setColumnName(e.target.value.toLowerCase().replaceAll(' ', '_')) }} disabled={columnType === 'relation' && isEditColumn} />
+          <TextField className={styles.input} placeholder="Column Name" value={columnName} variant="standard" type={'text'} InputProps={{ disableUnderline: false }} onChange={e => { e.target.value.length <= 20 && setColumnName(e.target.value.toLowerCase().replaceAll(' ', '_')) }} disabled={columnType === 'relation' && isEditColumn} />
         </Box>
         <Box display={"flex"} alignItems={"center"} marginY={"10px"} width={"70%"} justifyContent={"space-between"}>
           <TextField className={styles['input-label']} value={"Column Type"} variant="standard" type={'text'} InputProps={{ disableUnderline: true, readOnly: true }} />
@@ -402,6 +403,8 @@ export default function Schema() {
         primary: primary[0],
         unique: unique[0],
         length: length[0] || 0,
+        scale: scale[0] as number,
+        precision: precision[0] as number,
       }
       tables[columnTableId].columns.push(column)
     }

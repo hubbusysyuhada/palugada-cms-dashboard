@@ -9,7 +9,7 @@ export default function BooleanConstructor(props: ColumnState) {
 
   useEffect(() => {
     if (!props.isEdit) {
-      setDefaultValue("true")
+      setDefaultValue(true)
     }
   }, [])
 
@@ -19,7 +19,7 @@ export default function BooleanConstructor(props: ColumnState) {
         <TextField className={styles['input-label']} value={"Default"} variant="standard" type={'text'} InputProps={{ disableUnderline: true, readOnly: true }} />
         <p>:</p>
         <div className={styles['input']}>
-          <Switch checked={defaultValue === "true"} onClick={() => { setDefaultValue(defaultValue === 'true' ? 'false' : 'true') }} />
+          <Switch checked={defaultValue} onClick={() => { setDefaultValue(!defaultValue) }} />
         </div>
       </Box>
     </>

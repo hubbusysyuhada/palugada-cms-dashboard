@@ -1,5 +1,8 @@
 import * as orm from '@mikro-orm/core'
 import { v4 as uuid } from 'uuid'
+{{!! IMPORT_RELATION !!}}
+
+export const relationColumns = {{!! RELATION_COLUMNS !!}}
 
 @orm.Entity({ tableName: "{{!! TABLENAME !!}}" })
 export default class {{!! CLASSNAME !!}} {

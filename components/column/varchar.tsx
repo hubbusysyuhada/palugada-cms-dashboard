@@ -25,9 +25,9 @@ export default function VarcharConstructor(props: ColumnState) {
     if (!props.isEdit) {
       setDefaultValue("")
       setDefaultType("value")
-      setNullable("true")
-      setUnique("false")
-      setIndex("false")
+      setNullable(true)
+      setUnique(false)
+      setIndex(false)
       setLength(255)
     }
     if (defaultValue) {
@@ -36,14 +36,17 @@ export default function VarcharConstructor(props: ColumnState) {
   }, [])
 
   useEffect(() => {
-    if (haveDefault && !defaultValue) props.columnRule(false)
+    if (haveDefault && !defaultValue) {
+      setUnique(false)
+      props.columnRule(false)
+    }
     else props.columnRule(true)
   }, [defaultValue, haveDefault])
 
   const changeDefault = () => {
     if (!haveDefault) {
-      setNullable("false")
-      setUnique("false")
+      setNullable(false)
+      setUnique(false)
     }
     else {
       setDefaultType("value")
