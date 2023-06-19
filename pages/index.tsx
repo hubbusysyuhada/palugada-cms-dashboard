@@ -41,12 +41,12 @@ export default function Generator() {
           schema: JSON.parse(localStorage.getItem('SCHEMA') || '{"tables": []}')
         }
       })
-      // const fileUrl = window.URL.createObjectURL(new Blob([data]))
-      // const anchor = document.createElement("a")
-      // anchor.href = fileUrl
-      // anchor.setAttribute("download", "mandoor-generated-app.zip")
-      // anchor.click()
-      // anchor.remove()
+      const fileUrl = window.URL.createObjectURL(new Blob([data]))
+      const anchor = document.createElement("a")
+      anchor.href = fileUrl
+      anchor.setAttribute("download", "mandoor-generated-app.zip")
+      anchor.click()
+      anchor.remove()
     } catch (error) {
       console.log(error);
     }
