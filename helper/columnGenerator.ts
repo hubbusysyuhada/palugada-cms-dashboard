@@ -70,7 +70,7 @@ export default class ColumnGenerator {
   }
 
   public async varchar(returnPrimitive: boolean = false) {
-    return `    @orm.Property({ type: 'varchar', length: ${this.column.length}${this.column.unique && !this.column.default ? ', unique: true' : ''}, index: ${this.column.index} })\n    ${this.column.name}${this.column.nullable && !this.column.default ? '?' : ''}: string${this.column.default ? ' = ' + this.column.default : ''};`
+    return `    @orm.Property({ type: 'varchar', length: ${this.column.length}${this.column.unique && !this.column.default ? ', unique: true' : ''}, index: ${this.column.index} })\n    ${this.column.name}${this.column.nullable && !this.column.default ? '?' : ''}: string${this.column.default ? ' = ' + `'${this.column.default}'` : ''};`
   }
 
   public async relation(returnPrimitive: boolean = false, payload: { tables: Table[]; tableName: string } = { tables: [], tableName: '' }) {
