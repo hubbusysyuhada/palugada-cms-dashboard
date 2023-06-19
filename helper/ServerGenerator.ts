@@ -11,10 +11,10 @@ import { FKActionType } from "@/components/column/relation";
 export default class ServerGenerator {
   protected env: EnvObj[]
   protected schema: Schema
-  protected dirr = 'mandoor-generated-server'
-  protected zipPath = 'mandoor-generated-server.zip'
-  // protected dirr = '/tmp/mandoor-generated-server'
-  // protected zipPath = '/tmp/mandoor-generated-server.zip'
+  // protected dirr = 'mandoor-generated-server'
+  // protected zipPath = 'mandoor-generated-server.zip'
+  protected dirr = '/tmp/mandoor-generated-server'
+  protected zipPath = '/tmp/mandoor-generated-server.zip'
   protected templatePath = path.join(process.cwd(), 'template')
 
   constructor(body: RequestBody) {

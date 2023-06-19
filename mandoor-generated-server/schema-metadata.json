@@ -1,0 +1,186 @@
+{
+  "schema": {
+    "tables": [
+      {
+        "name": "user",
+        "columns": [
+          {
+            "name": "id",
+            "type": "uuid",
+            "primary": true,
+            "isProtected": true,
+            "default": "uuid()"
+          },
+          {
+            "name": "external_id",
+            "type": "varchar",
+            "length": 255,
+            "unique": true,
+            "index": true,
+            "nullable": false,
+            "isProtected": true
+          },
+          {
+            "name": "password",
+            "type": "password",
+            "nullable": false,
+            "isProtected": true
+          },
+          {
+            "name": "created_at",
+            "type": "timestamp",
+            "default": "new Date()",
+            "defaultType": "value",
+            "isProtected": true
+          },
+          {
+            "name": "profile_picture",
+            "type": "varchar",
+            "isProtected": false,
+            "default": "https://1fid.com/wp-content/uploads/2022/06/no-profile-picture-6-1024x1024.jpg",
+            "defaultType": "value",
+            "autoIncrement": false,
+            "index": false,
+            "nullable": false,
+            "primary": false,
+            "unique": false,
+            "length": 255,
+            "scale": null,
+            "precision": null
+          },
+          {
+            "name": "is_verified",
+            "type": "boolean",
+            "isProtected": false,
+            "default": false,
+            "defaultType": "value",
+            "autoIncrement": false,
+            "index": false,
+            "nullable": true,
+            "primary": false,
+            "unique": false,
+            "length": 255,
+            "scale": null,
+            "precision": null
+          },
+          {
+            "name": "memes_posted",
+            "type": "relation",
+            "relation": {
+              "relationType": "OneToMany",
+              "isOwner": true,
+              "targetTable": 1,
+              "targetColumn": 5,
+              "onUpdate": "NO ACTION",
+              "onDelete": "NO ACTION"
+            }
+          },
+          {
+            "name": "memes_upvoted",
+            "type": "relation",
+            "relation": {
+              "relationType": "ManyToMany",
+              "isOwner": false,
+              "targetTable": 1,
+              "targetColumn": 6,
+              "onUpdate": "NO ACTION",
+              "onDelete": "NO ACTION"
+            }
+          }
+        ],
+        "isProtected": true,
+        "isOpen": true
+      },
+      {
+        "name": "meme",
+        "isProtected": false,
+        "columns": [
+          {
+            "name": "id",
+            "type": "uuid",
+            "primary": true,
+            "isProtected": true,
+            "default": "uuid()"
+          },
+          {
+            "name": "created_at",
+            "type": "timestamp",
+            "default": "new Date()",
+            "defaultType": "value",
+            "isProtected": true
+          },
+          {
+            "name": "title",
+            "type": "varchar",
+            "isProtected": false,
+            "default": "",
+            "defaultType": "value",
+            "autoIncrement": false,
+            "index": true,
+            "nullable": false,
+            "primary": false,
+            "unique": false,
+            "length": 255
+          },
+          {
+            "name": "source_path",
+            "type": "varchar",
+            "isProtected": false,
+            "default": "",
+            "defaultType": "value",
+            "autoIncrement": false,
+            "index": false,
+            "nullable": false,
+            "primary": false,
+            "unique": false,
+            "length": 500,
+            "scale": null,
+            "precision": null
+          },
+          {
+            "name": "total_likes",
+            "type": "integer",
+            "isProtected": false,
+            "default": "0",
+            "defaultType": "value",
+            "autoIncrement": false,
+            "index": false,
+            "nullable": false,
+            "primary": false,
+            "unique": false,
+            "length": 500,
+            "scale": null,
+            "precision": null
+          },
+          {
+            "name": "poster_id",
+            "type": "relation",
+            "relation": {
+              "relationType": "ManyToOne",
+              "isOwner": false,
+              "targetTable": 0,
+              "targetColumn": 6,
+              "onUpdate": "NO ACTION",
+              "onDelete": "NO ACTION"
+            }
+          },
+          {
+            "name": "upvotes",
+            "type": "relation",
+            "relation": {
+              "relationType": "ManyToMany",
+              "isOwner": true,
+              "targetTable": 0,
+              "targetColumn": 7,
+              "onUpdate": "NO ACTION",
+              "onDelete": "NO ACTION"
+            }
+          }
+        ],
+        "error": "",
+        "isOpen": true
+      }
+    ]
+  },
+  "env": []
+}

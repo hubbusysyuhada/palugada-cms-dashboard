@@ -27,15 +27,14 @@ export default async function handler(
   const serverGenerator = new ServerGenerator(req.body)
   await serverGenerator.generateServer()
 
-  res.send('ok')
-  // const fileStream = serverGenerator.getFileStream()
+  const fileStream = serverGenerator.getFileStream()
   
-  // fileStream.on('open', () => {
-  //   fileStream.pipe(res)
-  // })
-  // fileStream.on('end', () => {
-  //   serverGenerator.deleteDirectory()
-  //   fs.unlink('./mandoor-generated-server.zip', () => { })
-  // })
+  fileStream.on('open', () => {
+    fileStream.pipe(res)
+  })
+  fileStream.on('end', () => {
+    serverGenerator.deleteDirectory()
+    fs.unlink('./mandoor-generated-server.zip', () => { })
+  })
 
 }
