@@ -1,14 +1,182 @@
 @import "styles/variables.module";
-@font-face { font-family: roboto-slab; 
-  src: url('./fonts/Roboto_Slab//RobotoSlab-VariableFont_wght.ttf'); } 
+
+@font-face {
+  font-family: roboto-slab;
+  src: url('./fonts/Roboto_Slab//RobotoSlab-VariableFont_wght.ttf');
+}
 
 * {
   margin: 0;
   padding: 0;
-  font-family: roboto-slab, serif;
+  font-family: roboto-slab, monospace;
   font-weight: 400;
 }
 
 body {
-  background-color:$secondary-color;
+  background-color: $secondary-color;
+}
+
+
+@each $code, $position in (center: center, start: flex-start, end: flex-end) {
+  .flex-#{$code} {
+    display: flex;
+    justify-content: $position;
+    align-items: center;
+    align-content: center;
+    text-align: center;
+  }
+}
+
+
+@for $i from 0 through 200 {
+  .p-#{$i} {
+    padding: #{$i}px !important;
+  }
+
+  .m-#{$i} {
+    padding: #{$i}px !important;
+  }
+
+  @each $code, $position in (l: left, r: right, t: top, b: bottom) {
+    .p#{$code}-#{$i} {
+      padding-#{$position}: #{$i}px !important;
+    }
+
+    .m#{$code}-#{$i} {
+      margin-#{$position}: #{$i}px !important;
+    }
+  }
+}
+
+@each $position in (left, right, center) {
+  .text-align-#{$position} {
+    text-align: #{$position} !important;
+  }
+}
+
+@for $i from 1 through 100 {
+  .width-#{$i} {
+    width: #{$i}#{"%"} !important;
+  }
+}
+
+.root-page {
+  height: 100vh;
+  width: 100%;
+}
+
+.root-component, .root-with-filter {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .register-container {
+    position: absolute;
+    top: 32px;
+    right: 32px;
+  }
+
+  .table-container {
+    max-height: calc(100vh * (75 / 100));
+    overflow: auto;
+  }
+}
+
+table {
+  border: 1px solid #222222;
+  th {
+    background-color: $blue !important;
+    color: #f3f3f3 !important;
+  }
+}
+
+.root-with-filter {
+  flex-direction: column;
+  justify-content: flex-start;
+  
+  .table-content {
+    margin-top: 75px;
+    width: 70%;
+
+    .filter-group {
+      height: 50px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .table-container {
+      max-height: calc(100vh * (70 / 100));
+    }
+  }
+
+}
+
+.table-pagination {
+  background-color: $secondary-color !important;
+}
+
+.d-flex {
+  display: flex !important;
+}
+
+.flex-space-between {
+  justify-content: space-between !important;
+}
+
+.table-row-hover {
+  background-color: #ece7e7 !important;
+}
+
+.global-btn {
+  font-size: 12px !important;
+  background-color: #6A32CB !important;
+}
+
+*::-webkit-scrollbar {
+  display: none !important;
+}
+
+.react-number-input {
+  border: none !important;
+  text-align: center;
+  width: 100%;
+
+  &:focus {
+    outline: none !important;
+  }
+}
+
+@each $direction in (row, row-reverse, column, column-reverse) {
+  .flex-#{$direction} {
+    flex-direction: #{$direction} !important;
+  }
+}
+
+.MuiTooltip-tooltip {
+  max-width: 150px !important;
+  margin-top: 5px !important;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.btn-sort {
+  font-size: 16px !important;
+  margin-left: 5px;
+  &:hover {
+    cursor: pointer;
+  }
+
+}
+
+.up {
+  @extend .btn-sort;
+  transform: rotate(-90deg);
+}
+
+.down {
+  @extend .btn-sort;
+  transform: rotate(90deg);
 }

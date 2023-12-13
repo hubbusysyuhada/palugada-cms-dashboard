@@ -1,0 +1,55 @@
+@import "styles/variables.module";
+
+.root {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: $white;
+  height: 100vh;
+  min-width: 250px;
+}
+
+.tabs {
+  border-right: 1px solid $white;
+  width: 100%;
+  height: calc(100vh - 110px);
+}
+
+.primary-color {
+  color: $primary-color !important;
+}
+
+.account-tab {
+  display: flex;
+  flex-direction: column;
+  position: absolute !important;
+  bottom: 10px;
+  padding-left: 0 !important;
+  width: 100%;
+}
+
+.account-setting-btn {
+  // background-color: red !important;
+  margin-bottom: 5px !important;
+  text-align: left !important;
+  justify-content: flex-start !important;
+  padding-left: 25% !important;
+  
+  & span {
+    font-size: 12px !important;
+  }
+}
+
+.button-tab {
+  margin-bottom: 5px !important;
+  text-align: left !important;
+  justify-content: flex-start !important;
+  padding-left: 15% !important;
+}
+
+.image-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}

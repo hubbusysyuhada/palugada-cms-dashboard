@@ -1,0 +1,78 @@
+@import "styles/variables.module";
+
+.root {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
+  padding: 20px;
+  
+  .role-container {
+    width: 100%;
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items:flex-start;
+    
+    justify-content: space-between;
+    .new-role-name {
+      width: 250px;
+    }
+  }
+
+  .role {
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
+
+  .role-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 500px;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  .show {
+    display: block !important;
+  }
+
+  .hide {
+    display: none !important;
+  }
+
+  .permissions {
+    width: 100%;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  .permission-detail {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding-left: 25px;
+    padding-right: 30px;
+
+    margin-top: 5px;
+    margin-bottom: 5px;
+
+    p {
+      color: #121212bd;
+    }
+  }
+
+  .create-div {
+    margin-top: 40px;
+    // margin-left: 15px;
+  }
+
+
+}

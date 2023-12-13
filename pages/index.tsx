@@ -1,118 +1,67 @@
-import navStyles from 'styles/Generator.module.scss'
-import Image from 'next/image'
-import { useState } from 'react'
-import { Env, Schema, RBAC, Function } from '@/components/'
-import axios from 'axios'
-import Head from 'next/head'
+import { useEffect, useState } from 'react'
+import Layout from '@/components/layout'
+import { RootStateType, useAppDispatch } from '@/store'
+import { useSelector } from 'react-redux'
+import { useRouter } from 'next/router'
+import Navbar from '@/components/navbar'
+import { FETCH_FEATURES, FETCH_USER } from '@/store/actions/AuthAction'
+import { CatalogPage, CategoryPage, CreateSupplyPage, EmployeePage, RBACPage, RackPage, SubCategoryPage, SupplierPage, SupplyPage, UserPage } from '@/components/pages'
 
-export default function Generator() {
-  const [tab, setTab] = useState('schema')
+export default function RootPage() {
+  const reduxRouteName = useSelector((state: RootStateType) => state.GlobalContextReducer.routeName)
+  const dispatch = useAppDispatch()
+  const route = useRouter()
+  const [isReady, setIsReady] = useState(false)
 
-  const moveTab = (state: string) => setTab(state)
+  useEffect(() => {
+    if (!localStorage.getItem("access_token")) {
+      route.push('/auth')
+    }
+    else {
+      dispatch(FETCH_USER(route))
+      dispatch(FETCH_FEATURES())
+    }
+    setIsReady(true)
+  }, [])
 
-  const selectTab = () => {
-    switch (tab) {
-      case 'schema':
-        return (<Schema />)
-        break;
-      case 'env':
-        return (<Env />)
-        break;
-      case 'function':
-        return (<Function />)
-        break;
+  const renderPage = () => {
+    switch (reduxRouteName) {
+      case "roles":
+        return <RBACPage />
+      case "user":
+        return <UserPage />
+      case "employees":
+        return <EmployeePage />
+      case "catalogs":
+        return <CatalogPage />
+      case "categories":
+        return <CategoryPage />
+      case "sub_categories":
+        return <SubCategoryPage />
+      case "racks":
+        return <RackPage />
+      case "suppliers":
+        return <SupplierPage />
+      case "supplies":
+        return <SupplyPage />
+      case "create-supply":
+        return <CreateSupplyPage />
       default:
-        return (<RBAC />)
-        break;
+        return (<div style={{ display: "flex", justifyContent: "center", alignContent: "center", alignItems: "center", height: "100%" }}>
+          <h1>UNDER CONSTRUCTION</h1>
+        </div>)
     }
   }
 
-  const downloadServer = async () => {
-    try {
-      const { data } = await axios({
-        url: `${window.location.origin}/api/generate`,
-        method: "POST",
-        headers: {
-          "Content-Type": 'application/json',
-        },
-        responseType: "arraybuffer",
-        data: {
-          env: JSON.parse(localStorage.getItem('ENV_VAR') || "[]"),
-          schema: JSON.parse(localStorage.getItem('SCHEMA') || '{"tables": []}')
-        }
-      })
-      const fileUrl = window.URL.createObjectURL(new Blob([data]))
-      const anchor = document.createElement("a")
-      anchor.href = fileUrl
-      anchor.setAttribute("download", "mandoor-generated-app.zip")
-      anchor.click()
-      anchor.remove()
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
+  if (!isReady) return <></>
   return (
-    <>
-      <Head>
-        <title>Mandoor by Digital Hubb</title>
-        <link rel="shortcut icon" href="/mandoor-logo.png" />
-      </Head>
-      <div style={{ display: "flex" }}>
-        <div className={navStyles.sidebar}>
-          <div className={navStyles['project-detail']}>
-            <Image
-              className={navStyles.logo}
-              src="/mandoor-logo.png"
-              alt="Mandoor Logo"
-              width={45}
-              height={37}
-              priority
-            />
-            <h3>Server Generator</h3>
-          </div>
-
-          <div className={navStyles.menu}>
-            <div className={navStyles.generator}>
-              <div className={`${navStyles['menu-container']} ${tab === 'schema' ? navStyles.active : ''}`} onClick={() => moveTab("schema")}>
-                <h4>SCHEMA</h4>
-              </div>
-              <div className={`${navStyles['menu-container']} ${tab === 'env' ? navStyles.active : ''}`} onClick={() => moveTab("env")}>
-                <h4>ENV</h4>
-              </div>
-              {/* <div className={`${navStyles['menu-container']} ${tab === 'rbac' ? navStyles.active : ''}`} onClick={() => moveTab("rbac")}>
-                <h4>RBAC</h4>
-              </div> */}
-              {/* <div className={`${navStyles['menu-container']} ${tab === 'function' ? navStyles.active : ''}`} onClick={() => moveTab("function")}>
-                <h4>FUNCTION</h4>
-              </div> */}
-            </div>
-            <div className={navStyles.exporter}>
-              {/* <div className={navStyles['menu-container']}>
-                <h4>IMPORT</h4>
-              </div> */}
-              {/* <div className={navStyles['menu-container']}>
-                <h4>EXPORT</h4>
-              </div> */}
-              <div className={navStyles['menu-container']} onClick={downloadServer}>
-                <h4>DOWNLOAD</h4>
-              </div>
-              <Image
-                className={navStyles.logo}
-                src="/mandoor-text.png"
-                alt="Mandoor Text"
-                width={100}
-                height={15}
-                priority
-              />
-              <p className={navStyles.copyright}>© Hubbusysyuhada</p>
-            </div>
-          </div>
-        </div>
-        <div className={navStyles['menu-content']}>
-          {selectTab()}
+    <Layout>
+      <div className="flex-start" style={{ height: "100vh", width: "100%" }}>
+        <Navbar />
+        <div className='pl-25 pr-25 root-page'>
+          {renderPage()}
         </div>
       </div>
-    </>
+    </Layout>
   )
 }
