@@ -1,6 +1,7 @@
 import { Reducer } from '@reduxjs/toolkit'
 import { Rack } from './RackReducer';
 import { SubCategory } from './SubCategoryReducer';
+import { Supply } from './SupplyReducer';
 
 export type ItemReducerType = {
   items: Item[];
@@ -16,6 +17,7 @@ export type Item = {
   rack: Rack;
   sub_category: SubCategory;
   stock: number;
+  supply: Supply
 }
 
 const initialState: ItemReducerType = {

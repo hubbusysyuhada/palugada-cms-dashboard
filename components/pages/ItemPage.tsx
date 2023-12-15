@@ -8,32 +8,36 @@ import { KeyboardArrowDown, KeyboardArrowUp, InfoOutlined, ImportExport, ArrowRi
 import { Supplier as SupplierType } from '@/store/reducer/SupplierReducer'
 import { SET_ROUTE } from '@/store/actions/GlobalContextAction'
 import { FETCH_ALL_SUPPLIES, UPDATE_SUPPLY } from '@/store/actions/SupplyAction'
-import { Item } from '@/store/reducer/ItemReducer'
+import { Item as ItemType } from '@/store/reducer/ItemReducer'
 import SwalModal from '@/helper/SwalModal'
 import { Supply as SupplyType } from '@/store/reducer/SupplyReducer'
+import { FETCH_ALL_ITEMS, UPDATE_ITEM } from '@/store/actions/ItemActions'
+import { SubCategory } from '@/store/reducer/SubCategoryReducer'
 
-export default function Supply() {
-  const reduxSupplies = useSelector((state: RootStateType) => state.SupplyReducer.supplies)
+export default function Item() {
+  const reduxItems = useSelector((state: RootStateType) => state.ItemReducer.items)
   const reduxSuppliers = useSelector((state: RootStateType) => state.SupplierReducer.suppliers)
+  const reduxSubCategories = useSelector((state: RootStateType) => state.SubCategoryReducer.sub_categories)
   const totalRow = useSelector((state: RootStateType) => state.SupplyReducer.totalRow)
   const [expandRow, setExpandRow] = useState(-1)
   const [debounceTimer, setDebounceTimer] = useState<NodeJS.Timeout>()
   const keywords = useRef('')
-  const [dueDateOrderBy, setDueDateOrderBy] = useState<'ASC' | 'DESC' | ''>('')
+  const [issuedDateOrderBy, setIssuedDateOrderBy] = useState<'ASC' | 'DESC' | ''>('')
   const [hover, setHover] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(25)
   const [page, setPage] = useState(0)
+  const [itemDescription, setItemDescription] = useState<Record<number, string>>({})
 
   const [supplierSearchNames, setSupplierSearchNames] = useState<string[]>(['Pilih Supplier'])
   const supplierSearchIds = useRef<string[]>([])
 
-  const [paidSearchNames, setPaidSearchNames] = useState<string[]>(['Tidak Ada Yang Dipilih'])
-  const paidSearchValues = useRef<boolean[]>([])
+  const [subCategorySearchNames, setSubCategorySearchNames] = useState<string[]>(['Pilih Sub Kategori'])
+  const subCategorySearchIds = useRef<number[]>([])
 
   const dispatch = useAppDispatch()
 
   useEffect(() => {
-    dispatch(FETCH_ALL_SUPPLIES({ limit: rowsPerPage, offset: page * rowsPerPage }))
+    dispatch(FETCH_ALL_ITEMS({ limit: rowsPerPage, offset: page * rowsPerPage }))
   }, [])
 
   useEffect(() => {
@@ -41,9 +45,15 @@ export default function Supply() {
   }, [rowsPerPage, page])
 
   useEffect(() => {
-    if (dueDateOrderBy) filterSearch([['due_date', dueDateOrderBy]])
+    const val: Record<number, string> = {}
+    reduxItems.forEach(v => val[v.id] = v.description || '-')
+    setItemDescription(val)
+  }, [reduxItems])
+
+  useEffect(() => {
+    if (issuedDateOrderBy) filterSearch([['supply.issued_date', issuedDateOrderBy]])
     else filterSearch()
-  }, [dueDateOrderBy])
+  }, [issuedDateOrderBy])
 
   const handleSupplierSeach = (ids: string[]) => {
     const supplier = reduxSuppliers.find(s => s.id === ids[ids.length - 1]) as SupplierType
@@ -69,31 +79,26 @@ export default function Supply() {
     filterSearch()
   }
 
-  const handlePaidSeach = (ids: string[]) => {
-    const mapValues = {
-      'true': 'LUNAS',
-      'false': 'BELUM LUNAS'
+  const handleSubCategorySeach = (ids: string[]) => {
+    const subCategory = reduxSubCategories.find(s => +s.id === +ids[ids.length - 1]) as SubCategory
+    const idIndexOf = subCategorySearchIds.current.indexOf(subCategory.id)
+    const nameIndexOf = subCategorySearchNames.indexOf(subCategory.name)
+    let subCategoryNames: string[] = []
+    let subCategoryIds: number[] = []
+
+    if (idIndexOf === -1) subCategoryIds = [...subCategorySearchIds.current, subCategory.id]
+    else subCategoryIds = subCategorySearchIds.current.filter((_, i) => i !== idIndexOf)
+
+    if (nameIndexOf === -1) subCategoryNames = [...subCategorySearchNames, subCategory.name]
+    else subCategoryNames = subCategorySearchNames.filter((_, i) => i !== nameIndexOf)
+
+    if (subCategoryIds.length !== 0 && subCategoryNames.includes('Pilih Sub Kategori')) {
+      subCategoryNames.shift()
     }
-    const value = ids[ids.length - 1] === "true"
-    const strVal = String(value) as keyof typeof mapValues
-    const idIndexOf = paidSearchValues.current.indexOf(value)
-    const nameIndexOf = paidSearchNames.indexOf(mapValues[strVal])
-    let paidNames: string[] = []
-    let paidValues: boolean[] = []
+    else if (subCategoryIds.length === 0) subCategoryNames.push('Pilih Sub Kategori')
 
-    if (idIndexOf === -1) paidValues = [...paidSearchValues.current, value]
-    else paidValues = paidSearchValues.current.filter((_, i) => i !== idIndexOf)
-
-    if (nameIndexOf === -1) paidNames = [...paidSearchNames, mapValues[strVal]]
-    else paidNames = paidSearchNames.filter((_, i) => i !== nameIndexOf)
-
-    if (paidValues.length !== 0 && paidNames.includes('Tidak Ada Yang Dipilih')) {
-      paidNames.shift()
-    }
-    else if (paidValues.length === 0) paidNames.push('Tidak Ada Yang Dipilih')
-
-    setPaidSearchNames(paidNames)
-    paidSearchValues.current = paidValues
+    setSubCategorySearchNames(subCategoryNames)
+    subCategorySearchIds.current = subCategoryIds
 
     filterSearch()
   }
@@ -110,8 +115,7 @@ export default function Supply() {
   const filterSearch = (orderBy?: [string, "ASC" | "DESC"][]) => {
     let offset = page * rowsPerPage
     if (offset >= totalRow) offset = 0
-
-    dispatch(FETCH_ALL_SUPPLIES({ keywords: keywords.current, limit: rowsPerPage, offset: page * rowsPerPage, supplierIds: supplierSearchIds.current, paid: paidSearchValues.current, orderBy }))
+    dispatch(FETCH_ALL_ITEMS({ keywords: keywords.current, limit: rowsPerPage, offset: page * rowsPerPage, supplierIds: supplierSearchIds.current, subCategoryIds: subCategorySearchIds.current, orderBy }))
   }
 
   const handleExpandRow = (index: number) => {
@@ -162,126 +166,38 @@ export default function Supply() {
     return `${parseNumber(day)}/${parseNumber(month + 1)}/${year}`
   }
 
-  const renderItem = (item: Item, liveDescription: string) => {
-    const el = [<Typography variant='caption'>{item.unique_id}</Typography>]
-    if (liveDescription) {
-      el.push((
-        <Tooltip title={liveDescription} arrow sx={{
-          [`& .${tooltipClasses.tooltip}`]: {
-            maxWidth: 'none',
-          }
-        }}>
-          <InfoOutlined style={{ fontSize: '14px', marginLeft: '5px' }} />
-        </Tooltip>
-      ))
-    }
-
-    return (
-      <Box className='d-flex mt-2 align-items-center justify-content-between' width='60%'>
-        <Box width={"35%"} className="d-flex align-items-center">{el}</Box>
-        <Box width={"25%"} className='d-flex flex-space-between'>
-          <Typography variant='caption'>{parseCurrency(item.buying_price)}</Typography>
-          <Typography variant='caption'>x</Typography>
-        </Box>
-        <Box width={"15%"} className='flex-center'>
-          <Typography variant='caption'>{item.stock}</Typography>
-        </Box>
-        <Box width={"25%"}>
-          <Typography variant='caption' className='mr-10'>=</Typography>
-          <Typography variant='caption'>{parseCurrency(item.buying_price * item.stock)}</Typography>
-        </Box>
-      </Box>
-    )
-  }
-
-  const paySupply = (supply: SupplyType) => {
-    SwalModal({
-      icon: "question",
-      html: `Ubah status pembayaran invoice ${supply.invoice_number} menjadi lunas?<br/>Status pembayaran tidak dapat diubah lagi.`,
-      action() {
-        dispatch(UPDATE_SUPPLY({ id: supply.id, is_paid: true }))
-      }
-    })
-  }
-
-  const renderSupplierDetail = (s: SupplyType) => {
-    if (s.is_paid) return (<></>)
-    return (<>
-      <Box className='d-flex flex-space-between' width="80%">
-        <Box className='width-20'>
-          <Box className='d-flex flex-space-between'>
-            <Typography variant='caption'>No. Rekening</Typography>
-            <Typography variant='caption'>:</Typography>
-          </Box>
-        </Box>
-        <Box className='width-80 ml-10' textAlign='justify'>
-          <Typography variant='caption'>{s.supplier.account_number}</Typography>
-        </Box>
-      </Box>
-      <Box className='d-flex flex-space-between' width='80%'>
-        <Box className='width-20'>
-          <Box className='d-flex flex-space-between'>
-            <Typography variant='caption'>Bank</Typography>
-            <Typography variant='caption'>:</Typography>
-          </Box>
-        </Box>
-        <Box className='width-80 ml-10' textAlign='justify'>
-          <Typography variant='caption'>{s.supplier.bank_name}</Typography>
-        </Box>
-      </Box>
-      <Box className='d-flex flex-space-between' width='80%'>
-        <Box className='width-20'>
-          <Box className='d-flex flex-space-between'>
-            <Typography variant='caption'>PIC</Typography>
-            <Typography variant='caption'>:</Typography>
-          </Box>
-        </Box>
-        <Box className='width-80 ml-10' textAlign='justify'>
-          <Typography variant='caption'>{s.supplier.contact_info} ({s.supplier.contact_person})</Typography>
-        </Box>
-      </Box>
-      <Box className='d-flex flex-space-between' width='80%'>
-        <Box className='width-20'>
-          <Box className='d-flex flex-space-between'>
-            <Typography variant='caption'>Catatan</Typography>
-            <Typography variant='caption'>:</Typography>
-          </Box>
-        </Box>
-        <Box className='width-80 ml-10' textAlign='justify'>
-          <Typography variant='caption'>{s.supplier.notes || '-'}</Typography>
-        </Box>
-      </Box>
-      <Box className="d-flex flex-row-reverse">
-        <Button variant="contained" className="global-btn" sx={{ height: '14px' }} onClick={() => paySupply(s)}>
-          <Typography sx={{ fontSize: '8px !important' }}>Bayar</Typography>
-        </Button>
-      </Box>
-    </>)
-  }
-
   const parseCurrency = (n: number) => `Rp. ${n.toLocaleString('id')}`
 
-  const handleSortDueDate = () => {
-    switch (dueDateOrderBy) {
+  const handleSortIssuedDate = () => {
+    switch (issuedDateOrderBy) {
       case "":
-        setDueDateOrderBy("ASC")
+        setIssuedDateOrderBy("ASC")
         break;
       case "ASC":
-        setDueDateOrderBy("DESC")
+        setIssuedDateOrderBy("DESC")
         break;
       case "DESC":
-        setDueDateOrderBy("")
+        setIssuedDateOrderBy("")
         break;
     }
   }
 
-  const renderSortDueDate = () => {
-    if (!dueDateOrderBy) return <ImportExport className="btn-sort" onClick={handleSortDueDate} />
-    return <ArrowRightAlt className={`btn-sort ${dueDateOrderBy === 'ASC' ? 'up' : 'down'}`} onClick={handleSortDueDate} />
+  const renderSortIssuedDate = () => {
+    if (!issuedDateOrderBy) return <ImportExport className="btn-sort" onClick={handleSortIssuedDate} />
+    return <ArrowRightAlt className={`btn-sort ${issuedDateOrderBy === 'ASC' ? 'up' : 'down'}`} onClick={handleSortIssuedDate} />
+  }
+
+  const handleDescriptionChange = (id: number, value: string) => setItemDescription({ ...itemDescription, [id]: value })
+
+  const handleDescriptionOnBlur = (id: number) => {
+    const val = itemDescription[id]
+    if (!val) setItemDescription({...itemDescription, [id]: '-'})
+
+    dispatch(UPDATE_ITEM({id, description: itemDescription[id]}))
   }
 
   const renderData = () => {
-    if (reduxSupplies.length) {
+    if (reduxItems.length) {
       return (
         <div className="table-container">
           <Paper>
@@ -290,23 +206,22 @@ export default function Supply() {
                 <TableHead>
                   <TableRow>
                     <TableCell align="center" width='5%'>No.</TableCell>
-                    <TableCell align="left" width='20%'>Invoice</TableCell>
-                    <TableCell align="left" width='25%'>Supplier</TableCell>
-                    <TableCell align="center" width='25%'>Status</TableCell>
-                    <TableCell align="center" width='20%'>
+                    <TableCell align="left" width='20%'>ID</TableCell>
+                    <TableCell align="left" width='25%'>Sub Kategori</TableCell>
+                    <TableCell align="center" width='25%'>Rak</TableCell>
+                    <TableCell align="center" width='25%' colSpan={2}>
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        Jatuh Tempo
-                        {renderSortDueDate()}
+                        Tanggal Masuk
+                        {renderSortIssuedDate()}
                       </Box>
                     </TableCell>
-                    <TableCell align="center" width='5%'></TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {reduxSupplies.map((s, index) => (
+                  {reduxItems.map((item, index) => (
                     <>
                       <TableRow
-                        key={s.id}
+                        key={item.id}
                         sx={{ '& > *': { borderBottom: 'unset !important' } }}
                         onMouseOver={() => setHover(index + 1)}
                         onMouseOut={() => setHover(0)}
@@ -314,10 +229,10 @@ export default function Supply() {
                         className={hover === index + 1 ? "table-row-hover" : ""}
                       >
                         <TableCell align="center" width='10%'>{index + 1 + (page * rowsPerPage)}</TableCell>
-                        <TableCell align="left">{s.invoice_number}</TableCell>
-                        <TableCell align="left">{s.supplier.name}</TableCell>
-                        <TableCell align="center">{s.is_paid ? 'LUNAS' : 'BELUM LUNAS'}</TableCell>
-                        <TableCell align="center">{parseDate(s.due_date)}</TableCell>
+                        <TableCell align="left">{item.unique_id}</TableCell>
+                        <TableCell align="left">{item.sub_category.name}</TableCell>
+                        <TableCell align="center">{item.rack.name}</TableCell>
+                        <TableCell align="center">{parseDate(item.supply.issued_date)}</TableCell>
                         <TableCell align="center">
                           {renderCollapsibleArrow(index)}
                         </TableCell>
@@ -334,6 +249,80 @@ export default function Supply() {
                               <Box className='d-flex flex-space-between' width='80%'>
                                 <Box className='width-20'>
                                   <Box className='d-flex flex-space-between'>
+                                    <Typography variant='caption'>Supplier</Typography>
+                                    <Typography variant='caption'>:</Typography>
+                                  </Box>
+                                </Box>
+                                <Box className='width-80 ml-10' textAlign="justify">
+                                  <Typography variant='caption'>{item.supply.supplier.name}</Typography>
+                                </Box>
+                              </Box>
+                              <Box className='d-flex flex-space-between' width='80%'>
+                                <Box className='width-20'>
+                                  <Box className='d-flex flex-space-between'>
+                                    <Typography variant='caption'>Stok</Typography>
+                                    <Typography variant='caption'>:</Typography>
+                                  </Box>
+                                </Box>
+                                <Box className='width-80 ml-10' textAlign="justify">
+                                  <Typography variant='caption'>{item.stock}</Typography>
+                                </Box>
+                              </Box>
+                              <Box className='d-flex flex-space-between' width='80%'>
+                                <Box className='width-20'>
+                                  <Box className='d-flex flex-space-between'>
+                                    <Typography variant='caption'>Harga Beli</Typography>
+                                    <Typography variant='caption'>:</Typography>
+                                  </Box>
+                                </Box>
+                                <Box className='width-80 ml-10' textAlign="justify">
+                                  <Typography variant='caption'>{parseCurrency(item.buying_price)}</Typography>
+                                </Box>
+                              </Box>
+                              <Box className='d-flex flex-space-between' width='80%'>
+                                <Box className='width-20'>
+                                  <Box className='d-flex flex-space-between'>
+                                    <Typography variant='caption'>Harga Jual</Typography>
+                                    <Typography variant='caption'>:</Typography>
+                                  </Box>
+                                </Box>
+                                <Box className='width-80 ml-10' textAlign="justify">
+                                  <Typography variant='caption'>{parseCurrency(item.selling_price)}</Typography>
+                                </Box>
+                              </Box>
+                              <Box className='d-flex flex-space-between' width='80%'>
+                                <Box className='width-20'>
+                                  <Box className='d-flex flex-space-between'>
+                                    <Typography sx={{ marginTop: '2.5px' }} variant='caption'>Deskripsi</Typography>
+                                    <Typography sx={{ marginTop: '2.5px' }} variant='caption'>:</Typography>
+                                  </Box>
+                                </Box>
+                                <Box className='width-80 ml-10' textAlign="justify">
+                                  <TextField
+                                    type="text"
+                                    InputProps={{ disableUnderline: true }}
+                                    variant="standard"
+                                    value={itemDescription[item.id]}
+                                    onChange={(e) => handleDescriptionChange(item.id, e.target.value)}
+                                    size='small'
+                                    sx={{ marginTop: '0px !important' }}
+                                    inputProps={{ style: { fontSize: '12px', textAlign: 'justify' } }}
+                                    // onBlur={e => {
+                                    //   console.log("out", e.target.value);
+                                    // }}
+                                    onBlur={e => handleDescriptionOnBlur(item.id)}
+                                    fullWidth
+                                    className='mb-5 mt-5'
+                                    multiline
+                                  />
+
+                                  {/* <Typography variant='caption'>{ item.description || '-' }</Typography> */}
+                                </Box>
+                              </Box>
+                              {/* <Box className='ml-40 mb-15'>
+                              <Box className='d-flex flex-space-between' width='80%'>
+                                <Box className='width-20'>
+                                  <Box className='d-flex flex-space-between'>
                                     <Typography variant='caption'>Tanggal Masuk</Typography>
                                     <Typography variant='caption'>:</Typography>
                                   </Box>
@@ -341,8 +330,8 @@ export default function Supply() {
                                 <Box className='width-80 ml-10' textAlign="justify">
                                   <Typography variant='caption'>{parseDate(s.issued_date)}</Typography>
                                 </Box>
-                              </Box>
-                              <Box className='d-flex flex-space-between'>
+                              </Box> */}
+                              {/* <Box className='d-flex flex-space-between'>
                                 <Box className='width-25'>
                                   <Box className='d-flex flex-space-between'>
                                     <Typography variant='caption'><span style={{ fontWeight: "bold" }}>Barang</span></Typography>
@@ -350,16 +339,16 @@ export default function Supply() {
                                 </Box>
                               </Box>
                               <Box className='d-flex flex-column flex-space-between ml-15'>
-                                {s.json_data.map((item: Item, index: number) => renderItem(item, s.items[index].description || item.description || ''))}
+                                {s.json_data.map((i: ItemType) => renderItem(i))}
                               </Box>
                               <Box className='d-flex flex-end ml-15 mb-5 mt-5' width='60%'>
                                 <Box sx={{ backgroundColor: 'black', height: '1px' }} width='65%' />
                               </Box>
                               <Box className='d-flex flex-end mb-5 mt-5 pr-50' width='60%'>
                                 <Typography variant='caption'><span style={{ fontWeight: "bold" }}>{parseCurrency(s.total_price)}</span></Typography>
-                              </Box>
+                              </Box> */}
 
-                              {renderSupplierDetail(s)}
+                              {/* {renderSupplierDetail(s)} */}
 
                             </Box>
                           </Collapse>
@@ -425,25 +414,23 @@ export default function Supply() {
           </div>
           <div className='width-30'>
             <div className='text-align-left'>
-              <p className='mb-10'><b>Status</b></p>
+              <p className='mb-10'><b>Sub Kategori</b></p>
               <Select
                 className='text-align-left'
                 renderValue={(selected: string[]) => selected.join(', ')}
-                value={paidSearchNames}
+                value={subCategorySearchNames}
                 variant="outlined"
                 size='small'
-                onChange={(e) => handlePaidSeach(e.target.value as string[])}
+                onChange={(e) => handleSubCategorySeach(e.target.value as string[])}
                 fullWidth
                 multiple
               >
-                <MenuItem value={'true'}>
-                  <Checkbox size='small' checked={paidSearchValues.current.includes(true)} />
-                  <ListItemText primary={'LUNAS'} />
-                </MenuItem>
-                <MenuItem value={'false'}>
-                  <Checkbox size='small' checked={paidSearchValues.current.includes(false)} />
-                  <ListItemText primary={'BELUM LUNAS'} />
-                </MenuItem>
+                {reduxSubCategories.map((s, i) => (
+                  <MenuItem value={s.id}>
+                    <Checkbox size='small' checked={subCategorySearchIds.current.includes(s.id)} />
+                    <ListItemText primary={s.name} />
+                  </MenuItem>
+                ))}
               </Select>
             </div>
           </div>

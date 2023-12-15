@@ -12,6 +12,7 @@ import { SubCategoryReducerType } from './reducer/SubCategoryReducer'
 import { RackReducerType } from './reducer/RackReducer'
 import { SupplierReducerType } from './reducer/SupplierReducer'
 import { SupplyReducerType } from './reducer/SupplyReducer'
+import { ItemReducerType } from './reducer/ItemReducer'
 
 export type RootStateType = {
   GlobalContextReducer: GlobalContextReducerType;
@@ -25,6 +26,7 @@ export type RootStateType = {
   RackReducer: RackReducerType;
   SupplierReducer: SupplierReducerType;
   SupplyReducer: SupplyReducerType;
+  ItemReducer: ItemReducerType;
 }
 
 const store = configureStore({ reducer })

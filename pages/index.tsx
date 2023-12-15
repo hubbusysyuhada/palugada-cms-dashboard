@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux'
 import { useRouter } from 'next/router'
 import Navbar from '@/components/navbar'
 import { FETCH_FEATURES, FETCH_USER } from '@/store/actions/AuthAction'
-import { CatalogPage, CategoryPage, CreateSupplyPage, EmployeePage, RBACPage, RackPage, SubCategoryPage, SupplierPage, SupplyPage, UserPage } from '@/components/pages'
+import { CatalogPage, CategoryPage, CreateSupplyPage, EmployeePage, ItemPage, RBACPage, RackPage, SubCategoryPage, SupplierPage, SupplyPage, UserPage } from '@/components/pages'
 
 export default function RootPage() {
   const reduxRouteName = useSelector((state: RootStateType) => state.GlobalContextReducer.routeName)
@@ -44,6 +44,8 @@ export default function RootPage() {
         return <SupplierPage />
       case "supplies":
         return <SupplyPage />
+      case "items":
+        return <ItemPage />
       case "create-supply":
         return <CreateSupplyPage />
       default:
