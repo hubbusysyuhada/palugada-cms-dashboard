@@ -57,7 +57,7 @@ export const DELETE_RACK = (id: string) => {
   }
 }
 
-export const UPDATE_RACK = (payload: { id: string; name: string; storage_number: number }) => {
+export const UPDATE_RACK = (payload: { id: string; name: string; storage_number: string }) => {
   return async (dispatch: UseAppDispatchType) => {
     try {
       const { id, name, storage_number } = payload

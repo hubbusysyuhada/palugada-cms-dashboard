@@ -132,7 +132,7 @@ export default function Employee() {
                     >
                       <TableCell align="center" width={'10%'}>{index + 1 + (page * rowsPerPage)}</TableCell>
                       <TableCell align="left">{employee.name}</TableCell>
-                      <TableCell align="left">{employee.name}</TableCell>
+                      <TableCell align="left">{employee.idKaryawan}</TableCell>
                       <TableCell align="center" width={'20%'}>
                         <Tooltip title="Edit">
                           <IconButton onClick={() => openEditEmployeeModal(employee)}>

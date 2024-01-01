@@ -4,7 +4,6 @@ import { useSelector } from 'react-redux'
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip, InputLabel, FormControl, TablePagination, Checkbox, ListItemText } from '@mui/material'
 import NoData from '../NoData'
 import { Edit, Delete } from '@mui/icons-material';
-import Swal from 'sweetalert2'
 import { CREATE_RACK, DELETE_RACK, FETCH_ALL_RACKS, UPDATE_RACK } from '@/store/actions/RackAction'
 import { Rack as RackType } from '@/store/reducer/RackReducer'
 import SwalModal from '@/helper/SwalModal'
@@ -21,10 +20,10 @@ export default function Rack() {
     name: '',
     storage_number: 0
   })
-  const [editRack, setEditRack] = useState<{ id: string; name: string; storage_number: number }>({
+  const [editRack, setEditRack] = useState<{ id: string; name: string; storage_number: string }>({
     id: '',
     name: '',
-    storage_number: 0
+    storage_number: ''
   })
   const [disableAddBtn, setDisableAddBtn] = useState(true)
   const [disableEditBtn, setDisableEditBtn] = useState(true)
@@ -76,7 +75,7 @@ export default function Rack() {
 
   const closeEditModal = () => {
     setOpenEditModal(false)
-    setEditRack({ id: '', name: '', storage_number: 0 })
+    setEditRack({ id: '', name: '', storage_number: '' })
     setDisableEditBtn(true)
   }
 
@@ -199,8 +198,8 @@ export default function Rack() {
           <TextField
             margin="dense"
             label="Nomor Lemari"
-            type="number"
-            InputProps={{ ...customTextInput, inputProps: { min: 0 } }}
+            type="text"
+            InputProps={{ ...customTextInput }}
             variant="standard"
             value={newRack.storage_number}
             onChange={(e) => setNewRack({ ...newRack, storage_number: +(e.target.value) })}
@@ -237,11 +236,11 @@ export default function Rack() {
           <TextField
             margin="dense"
             label="Nomor Lemari"
-            type="number"
-            InputProps={{ ...customTextInput, inputProps: { min: 0 } }}
+            type="text"
+            InputProps={{ ...customTextInput }}
             variant="standard"
             value={editRack.storage_number}
-            onChange={(e) => setEditRack({ ...editRack, storage_number: +(e.target.value) })}
+            onChange={(e) => setEditRack({ ...editRack, storage_number: e.target.value })}
             fullWidth
             className='mb-5 mt-5'
           />

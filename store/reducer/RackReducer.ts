@@ -8,7 +8,7 @@ export type RackReducerType = {
 export type Rack = {
   id: string;
   name: string;
-  storage_number: number;
+  storage_number: string;
 }
 
 const initialState: RackReducerType = {

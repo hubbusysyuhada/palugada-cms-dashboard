@@ -8,8 +8,15 @@ export type ItemReducerType = {
   totalRow: number;
 }
 
+export enum ItemUnitType {
+  GALOON = 'gln',
+  LITER = 'ltr',
+  SET = 'set'
+}
+
 export type Item = {
   id: number;
+  name: string;
   description?: string;
   unique_id: string;
   buying_price: number;
@@ -17,7 +24,8 @@ export type Item = {
   rack: Rack;
   sub_category: SubCategory;
   stock: number;
-  supply: Supply
+  unit: ItemUnitType;
+  supply: Supply;
 }
 
 const initialState: ItemReducerType = {

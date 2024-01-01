@@ -1,5 +1,4 @@
 import { RootStateType, useAppDispatch } from "@/store"
-import { FETCH_ALL_SUPPLIERS } from "@/store/actions/SupplierAction"
 import { Button, Checkbox, IconButton, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip } from "@mui/material"
 import { NumericFormat } from 'react-number-format';
 import { ArrowBackIosRounded, Delete, Close } from '@mui/icons-material';
@@ -8,23 +7,16 @@ import { useSelector } from "react-redux"
 import useStyle from 'styles/CreateSupply.module.scss'
 import { SET_ROUTE } from "@/store/actions/GlobalContextAction";
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import dayjs, { UnitType } from 'dayjs'
-import { FETCH_ALL_RACKS } from "@/store/actions/RackAction";
-import { FETCH_ALL_SUB_CATEGORIES } from "@/store/actions/SubCategoryAction";
+import dayjs from 'dayjs'
 import { CREATE_SUPPLY } from "@/store/actions/SupplyAction";
 import SwalModal from "@/helper/SwalModal";
+import parseDate from "@/helper/parseDate";
+import { ItemUnitType } from "@/store/reducer/ItemReducer";
+import parseNumber from "@/helper/parseNumber";
 
 const style = (key: string | string[]) => {
   if (Array.isArray(key)) return key.map(v => (useStyle[v] || v)).join(' ')
   return useStyle[key] || key
-}
-
-const parseDate = (date: dayjs.Dayjs) => {
-  if (date.get('h') >= 17) date = date.add(1, 'days')
-  const units: UnitType[] = ['hour', 'minute', 'second']
-  units.forEach(f => { date = date.set(f, 0) })
-  return date
-
 }
 
 export type SupplyPayloadType = {
@@ -33,16 +25,19 @@ export type SupplyPayloadType = {
   due_date: dayjs.Dayjs;
   issued_date: dayjs.Dayjs;
   is_paid: boolean;
+  notes: string;
 }
 
 export type SupplyItemPayloadType = {
   unique_id: string;
   description: string;
+  name: string;
   rack_id: string;
   sub_category_id: number;
   selling_price: number;
   buying_price: number;
   stock: number;
+  unit: ItemUnitType
 }
 
 export default function CreateSupply() {
@@ -56,6 +51,7 @@ export default function CreateSupply() {
     due_date: parseDate(dayjs().add(7, 'days')),
     issued_date: parseDate(dayjs()),
     is_paid: false,
+    notes: ''
   })
   const [items, setItems] = useState<SupplyItemPayloadType[]>([])
 
@@ -80,10 +76,6 @@ export default function CreateSupply() {
   const validateItems = async (args: SupplyItemPayloadType[]) => {
     const copy: SupplyItemPayloadType[] = JSON.parse(JSON.stringify(args))
     let isValidated = true
-    const parseNumber = (n: number) => {
-      if (n < 10) return `0${n}`
-      return `${n}`
-    }
     const month = payload.issued_date.get('months') + 1
     const years = String(payload.issued_date.get('years'))
     const issued_date = `${parseNumber(month)}${years[2]}${years[3]}`
@@ -100,7 +92,7 @@ export default function CreateSupply() {
       }
       else p.unique_id = ""
 
-      if (p.unique_id === "") isValidated = false
+      if (!p.unique_id || !p.name ) isValidated = false
     })
     setItems(copy)
     setIsItemsValidated(isValidated)
@@ -145,7 +137,9 @@ export default function CreateSupply() {
       sub_category_id: reduxSubCategories[0]?.id || 0,
       selling_price: 0,
       buying_price: 0,
-      stock: 1
+      stock: 1,
+      unit: ItemUnitType.GALOON,
+      name: ''
     }])
   }
 
@@ -165,6 +159,12 @@ export default function CreateSupply() {
     setItems(data)
   }
 
+  const handleUnitChange = (value: ItemUnitType, index: number) => {
+    const data: SupplyItemPayloadType[] = JSON.parse(JSON.stringify(items))
+    data[index].unit = value
+    setItems(data)
+  }
+
   const handleNumberChange = (key: 'buying_price' | 'selling_price' | 'stock', value: number, index: number) => {
     const data: SupplyItemPayloadType[] = JSON.parse(JSON.stringify(items))
     data[index][key] = +value
@@ -172,9 +172,17 @@ export default function CreateSupply() {
   }
 
   const handleDescChange = (value: string, index: number) => {
+    if (value.length > 500) return
     const data: SupplyItemPayloadType[] = JSON.parse(JSON.stringify(items))
     data[index].description = value
     setItems(data)
+  }
+
+  const handleNameChange = (value: string, index: number) => {
+    if (value.length > 255) return
+    const data: SupplyItemPayloadType[] = JSON.parse(JSON.stringify(items))
+    data[index].name = value
+    validateItems(data)
   }
 
   return (
@@ -250,6 +258,21 @@ export default function CreateSupply() {
               />
             </div>
           </div>
+          <div className={style(['form-group', 'multiline'])}>
+            <h4>Catatan</h4>
+            <div className={style('user-input')}>
+              <TextField
+                className="text-align-left"
+                value={payload.notes}
+                onChange={e => setPayload({ ...payload, notes: e.target.value })}
+                placeholder='Catatan Transaksi'
+                variant="standard"
+                fullWidth
+                multiline
+                maxRows={4}
+              />
+            </div>
+          </div>
           <div className={style('form-group')}>
             <h4>Lunas</h4>
             <div className={style('user-input')}>
@@ -271,13 +294,14 @@ export default function CreateSupply() {
                     <TableHead>
                       <TableRow>
                         <TableCell align="center" width={"5%"}>No.</TableCell>
-                        <TableCell align="left" width={"10%"}>ID</TableCell>
-                        <TableCell align="left" width={"20%"}>Deskripsi</TableCell>
-                        <TableCell align="center" width={"15%"}>Rak</TableCell>
+                        <TableCell align="left" width={"15%"}>Nama</TableCell>
+                        <TableCell align="left" width={"15%"}>Deskripsi</TableCell>
+                        <TableCell align="center" width={"10%"}>Rak</TableCell>
                         <TableCell align="center" width={"20%"}>Sub Kategori</TableCell>
                         <TableCell align="center" width={"10%"}>Harga Beli</TableCell>
                         <TableCell align="center" width={"10%"}>Harga Jual</TableCell>
                         <TableCell align="center" width={"5%"}>Stok</TableCell>
+                        <TableCell align="center" width={"5%"}>Satuan</TableCell>
                         <TableCell align="center" width={"5%"}></TableCell>
                       </TableRow>
                     </TableHead>
@@ -285,7 +309,19 @@ export default function CreateSupply() {
                       {items.map((v, i) => (
                         <TableRow>
                           <TableCell align="center">{i + 1}</TableCell>
-                          <TableCell align="left">{v.unique_id || 'INVALID'}</TableCell>
+                          <TableCell align="left">
+                            <TextField
+                              type="text"
+                              InputProps={{ disableUnderline: true }}
+                              variant="standard"
+                              value={v.name}
+                              onChange={(e) => { handleNameChange(e.target.value, i) }}
+                              fullWidth
+                              className='mb-5 mt-5'
+                              multiline
+                              rows={v.name.length > 18 ? 2 : 1}
+                            />
+                          </TableCell>
                           <TableCell align="left">
                             <TextField
                               type="text"
@@ -296,7 +332,7 @@ export default function CreateSupply() {
                               fullWidth
                               className='mb-5 mt-5'
                               multiline
-                              rows={ v.description.length > 30 ? 2 : 1}
+                              rows={v.description.length > 18 ? 2 : 1}
                             />
                           </TableCell>
                           <TableCell align="center">
@@ -309,7 +345,7 @@ export default function CreateSupply() {
                               fullWidth
                             >
                               {reduxRacks.map(r => (
-                                <MenuItem value={r.id} selected={v.rack_id === r.id}>{r.name}</MenuItem>
+                                <MenuItem value={r.id} selected={v.rack_id === r.id}>{r.storage_number}</MenuItem>
                               ))}
                             </Select>
                           </TableCell>
@@ -329,7 +365,7 @@ export default function CreateSupply() {
                           </TableCell>
                           <TableCell align="center">
                             <NumericFormat
-                              onKeyDown={(e) => {if (e.key === '-') e.preventDefault()}}
+                              onKeyDown={(e) => { if (e.key === '-') e.preventDefault() }}
                               className={style("react-number-input")}
                               min={0}
                               size={20}
@@ -341,7 +377,7 @@ export default function CreateSupply() {
                           </TableCell>
                           <TableCell align="center">
                             <NumericFormat
-                              onKeyDown={(e) => {if (e.key === '-') e.preventDefault()}}
+                              onKeyDown={(e) => { if (e.key === '-') e.preventDefault() }}
                               className={style("react-number-input")}
                               min={0}
                               size={20}
@@ -353,7 +389,7 @@ export default function CreateSupply() {
                           </TableCell>
                           <TableCell align="center">
                             <NumericFormat
-                              onKeyDown={(e) => {if (e.key === '-') e.preventDefault()}}
+                              onKeyDown={(e) => { if (e.key === '-') e.preventDefault() }}
                               className={style("react-number-input")}
                               min={1}
                               size={20}
@@ -362,6 +398,20 @@ export default function CreateSupply() {
                               decimalSeparator=","
                               onValueChange={v => handleNumberChange("stock", +v.value, i)}
                             />
+                          </TableCell>
+                          <TableCell align="center">
+                            <Select
+                              value={v.unit}
+                              label="unit"
+                              variant="standard"
+                              disableUnderline
+                              onChange={e => handleUnitChange(e.target.value as ItemUnitType, i)}
+                              fullWidth
+                            >
+                              {Object.values(ItemUnitType).map(unit => (
+                                <MenuItem value={unit} selected={unit === v.unit}>{unit}</MenuItem>
+                              ))}
+                            </Select>
                           </TableCell>
                           <TableCell align="left">
                             <Tooltip title="Hapus">

@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import style from 'styles/Navbar.module.scss'
 import { useSelector } from 'react-redux'
-import Swal from 'sweetalert2'
-import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Snackbar, Tabs, TextField, Typography } from '@mui/material';
+import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Snackbar, Tabs, TextField } from '@mui/material';
 import { RootStateType, useAppDispatch } from '@/store';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
@@ -106,10 +105,11 @@ export default function Navbar() {
       setValue(index)
       dispatch(SET_ROUTE(allowed[index]))
     }
-    if (reduxCurrentRoute === 'create-supply') {
+    if (['create-supply', 'create-transaction-in', 'create-transaction-out'].includes(reduxCurrentRoute)) {
+      const routeName = reduxCurrentRoute.includes('supply') ? 'supply' : 'transaksi'
       SwalModal({
         icon: 'question',
-        title: "Ingin meninggalkan halaman buat supply baru?",
+        title: `Ingin meninggalkan halaman buat ${routeName} baru?`,
         text: `Semua perubahan tidak akan tersimpan`,
         action: move
       })

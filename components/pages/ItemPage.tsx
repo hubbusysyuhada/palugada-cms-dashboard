@@ -1,18 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 import { RootStateType, useAppDispatch } from '@/store'
 import { useSelector } from 'react-redux'
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip, InputLabel, FormControl, TablePagination, Checkbox, ListItemText, Collapse, Box, Typography } from '@mui/material'
-import { tooltipClasses } from '@mui/material/Tooltip'
+import { Button, IconButton, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip, TablePagination, Checkbox, ListItemText, Collapse, Box, Typography } from '@mui/material'
 import NoData from '../NoData'
 import { KeyboardArrowDown, KeyboardArrowUp, InfoOutlined, ImportExport, ArrowRightAlt } from '@mui/icons-material';
 import { Supplier as SupplierType } from '@/store/reducer/SupplierReducer'
 import { SET_ROUTE } from '@/store/actions/GlobalContextAction'
-import { FETCH_ALL_SUPPLIES, UPDATE_SUPPLY } from '@/store/actions/SupplyAction'
-import { Item as ItemType } from '@/store/reducer/ItemReducer'
-import SwalModal from '@/helper/SwalModal'
-import { Supply as SupplyType } from '@/store/reducer/SupplyReducer'
 import { FETCH_ALL_ITEMS, UPDATE_ITEM } from '@/store/actions/ItemActions'
 import { SubCategory } from '@/store/reducer/SubCategoryReducer'
+import parseNumber from '@/helper/parseNumber'
 
 export default function Item() {
   const reduxItems = useSelector((state: RootStateType) => state.ItemReducer.items)
@@ -154,10 +150,6 @@ export default function Item() {
   const moveToCreatePage = () => dispatch(SET_ROUTE('create-supply'))
 
   const parseDate = (d: Date) => {
-    const parseNumber = (n: number) => {
-      if (n < 10) return `0${n}`
-      return `${n}`
-    }
     const date = new Date(d)
     const day = date.getDate()
     const month = date.getMonth()
@@ -191,9 +183,9 @@ export default function Item() {
 
   const handleDescriptionOnBlur = (id: number) => {
     const val = itemDescription[id]
-    if (!val) setItemDescription({...itemDescription, [id]: '-'})
+    if (!val) setItemDescription({ ...itemDescription, [id]: '-' })
 
-    dispatch(UPDATE_ITEM({id, description: itemDescription[id]}))
+    dispatch(UPDATE_ITEM({ id, description: itemDescription[id] }))
   }
 
   const renderData = () => {
@@ -206,7 +198,7 @@ export default function Item() {
                 <TableHead>
                   <TableRow>
                     <TableCell align="center" width='5%'>No.</TableCell>
-                    <TableCell align="left" width='20%'>ID</TableCell>
+                    <TableCell align="left" width='20%'>Nama</TableCell>
                     <TableCell align="left" width='25%'>Sub Kategori</TableCell>
                     <TableCell align="center" width='25%'>Rak</TableCell>
                     <TableCell align="center" width='25%' colSpan={2}>
@@ -229,9 +221,9 @@ export default function Item() {
                         className={hover === index + 1 ? "table-row-hover" : ""}
                       >
                         <TableCell align="center" width='10%'>{index + 1 + (page * rowsPerPage)}</TableCell>
-                        <TableCell align="left">{item.unique_id}</TableCell>
+                        <TableCell align="left">{item.name}</TableCell>
                         <TableCell align="left">{item.sub_category.name}</TableCell>
-                        <TableCell align="center">{item.rack.name}</TableCell>
+                        <TableCell align="center">{item.rack.storage_number}</TableCell>
                         <TableCell align="center">{parseDate(item.supply.issued_date)}</TableCell>
                         <TableCell align="center">
                           {renderCollapsibleArrow(index)}
@@ -246,6 +238,17 @@ export default function Item() {
                         <TableCell align="left" colSpan={4} className='p-0'>
                           <Collapse in={expandRow === index} timeout="auto" unmountOnExit>
                             <Box className='ml-40 mb-15'>
+                              <Box className='d-flex flex-space-between' width='80%'>
+                                <Box className='width-20'>
+                                  <Box className='d-flex flex-space-between'>
+                                    <Typography variant='caption'>ID</Typography>
+                                    <Typography variant='caption'>:</Typography>
+                                  </Box>
+                                </Box>
+                                <Box className='width-80 ml-10' textAlign="justify">
+                                  <Typography variant='caption'>{item.unique_id}</Typography>
+                                </Box>
+                              </Box>
                               <Box className='d-flex flex-space-between' width='80%'>
                                 <Box className='width-20'>
                                   <Box className='d-flex flex-space-between'>
@@ -266,6 +269,17 @@ export default function Item() {
                                 </Box>
                                 <Box className='width-80 ml-10' textAlign="justify">
                                   <Typography variant='caption'>{item.stock}</Typography>
+                                </Box>
+                              </Box>
+                              <Box className='d-flex flex-space-between' width='80%'>
+                                <Box className='width-20'>
+                                  <Box className='d-flex flex-space-between'>
+                                    <Typography variant='caption'>Satuan</Typography>
+                                    <Typography variant='caption'>:</Typography>
+                                  </Box>
+                                </Box>
+                                <Box className='width-80 ml-10' textAlign="justify">
+                                  <Typography variant='caption'>{item.unit}</Typography>
                                 </Box>
                               </Box>
                               <Box className='d-flex flex-space-between' width='80%'>
@@ -307,49 +321,13 @@ export default function Item() {
                                     size='small'
                                     sx={{ marginTop: '0px !important' }}
                                     inputProps={{ style: { fontSize: '12px', textAlign: 'justify' } }}
-                                    // onBlur={e => {
-                                    //   console.log("out", e.target.value);
-                                    // }}
                                     onBlur={e => handleDescriptionOnBlur(item.id)}
                                     fullWidth
                                     className='mb-5 mt-5'
                                     multiline
                                   />
-
-                                  {/* <Typography variant='caption'>{ item.description || '-' }</Typography> */}
                                 </Box>
                               </Box>
-                              {/* <Box className='ml-40 mb-15'>
-                              <Box className='d-flex flex-space-between' width='80%'>
-                                <Box className='width-20'>
-                                  <Box className='d-flex flex-space-between'>
-                                    <Typography variant='caption'>Tanggal Masuk</Typography>
-                                    <Typography variant='caption'>:</Typography>
-                                  </Box>
-                                </Box>
-                                <Box className='width-80 ml-10' textAlign="justify">
-                                  <Typography variant='caption'>{parseDate(s.issued_date)}</Typography>
-                                </Box>
-                              </Box> */}
-                              {/* <Box className='d-flex flex-space-between'>
-                                <Box className='width-25'>
-                                  <Box className='d-flex flex-space-between'>
-                                    <Typography variant='caption'><span style={{ fontWeight: "bold" }}>Barang</span></Typography>
-                                  </Box>
-                                </Box>
-                              </Box>
-                              <Box className='d-flex flex-column flex-space-between ml-15'>
-                                {s.json_data.map((i: ItemType) => renderItem(i))}
-                              </Box>
-                              <Box className='d-flex flex-end ml-15 mb-5 mt-5' width='60%'>
-                                <Box sx={{ backgroundColor: 'black', height: '1px' }} width='65%' />
-                              </Box>
-                              <Box className='d-flex flex-end mb-5 mt-5 pr-50' width='60%'>
-                                <Typography variant='caption'><span style={{ fontWeight: "bold" }}>{parseCurrency(s.total_price)}</span></Typography>
-                              </Box> */}
-
-                              {/* {renderSupplierDetail(s)} */}
-
                             </Box>
                           </Collapse>
                         </TableCell>
@@ -386,8 +364,8 @@ export default function Item() {
         <div className='filter-group mb-50'>
           <div className='width-30'>
             <div className='text-align-left'>
-              <p className='mb-10'><b>Invoice</b></p>
-              <TextField placeholder="Masukkan Invoice" variant="outlined" size='small' fullWidth value={keywords.current} onChange={e => handleSearchName(e.target.value)} />
+              <p className='mb-10'><b>Kata Kunci</b></p>
+              <TextField placeholder="Masukkan Kata Kunci" variant="outlined" size='small' fullWidth value={keywords.current} onChange={e => handleSearchName(e.target.value)} />
             </div>
           </div>
           <div className='width-30'>

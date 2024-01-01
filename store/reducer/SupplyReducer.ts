@@ -16,6 +16,7 @@ export type Supply = {
   json_data: Record<string, any>;
   due_date: Date;
   issued_date: Date;
+  notes?: string;
   items: Item[]
 }
 

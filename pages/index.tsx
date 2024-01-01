@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux'
 import { useRouter } from 'next/router'
 import Navbar from '@/components/navbar'
 import { FETCH_FEATURES, FETCH_USER } from '@/store/actions/AuthAction'
-import { CatalogPage, CategoryPage, CreateSupplyPage, EmployeePage, ItemPage, RBACPage, RackPage, SubCategoryPage, SupplierPage, SupplyPage, UserPage } from '@/components/pages'
+import { CatalogPage, CategoryPage, CreateSupplyPage, CreateTransactionInPage, CreateTransactionOutPage, EmployeePage, ItemPage, RBACPage, RackPage, SubCategoryPage, SupplierPage, SupplyPage, TransactionPage, UserPage } from '@/components/pages'
 
 export default function RootPage() {
   const reduxRouteName = useSelector((state: RootStateType) => state.GlobalContextReducer.routeName)
@@ -48,10 +48,14 @@ export default function RootPage() {
         return <ItemPage />
       case "create-supply":
         return <CreateSupplyPage />
+        case "transactions":
+          return <TransactionPage />
+        case "create-transaction-in":
+          return <CreateTransactionInPage />
+        case "create-transaction-out":
+          return <CreateTransactionOutPage />
       default:
-        return (<div style={{ display: "flex", justifyContent: "center", alignContent: "center", alignItems: "center", height: "100%" }}>
-          <h1>UNDER CONSTRUCTION</h1>
-        </div>)
+        return (<div><h1>{reduxRouteName}</h1></div>)
     }
   }
 

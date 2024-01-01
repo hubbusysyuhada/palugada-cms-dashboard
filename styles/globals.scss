@@ -17,7 +17,7 @@ body {
 }
 
 
-@each $code, $position in (center: center, start: flex-start, end: flex-end) {
+@each $code, $position in (center: center, start: flex-start, end: flex-end, between: space-between) {
   .flex-#{$code} {
     display: flex;
     justify-content: $position;
@@ -114,6 +114,8 @@ table {
 
 .table-pagination {
   background-color: $secondary-color !important;
+
+  border-right: none !important;
 }
 
 .d-flex {
@@ -179,4 +181,24 @@ table {
 .down {
   @extend .btn-sort;
   transform: rotate(90deg);
+}
+
+.datepicker-search-form {
+  width: 100%;
+  div {
+    height: 40px;
+  }
+}
+
+.bullet {
+  height: 8px;
+  width: 8px;
+  border-radius: 8px;
+
+  &.red {
+    background-color: red;
+  }
+  &.green {
+    background-color: green;
+  }
 }

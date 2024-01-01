@@ -13,6 +13,7 @@ import { RackReducerType } from './reducer/RackReducer'
 import { SupplierReducerType } from './reducer/SupplierReducer'
 import { SupplyReducerType } from './reducer/SupplyReducer'
 import { ItemReducerType } from './reducer/ItemReducer'
+import { TransactionyReducerType } from './reducer/TransactionReducer'
 
 export type RootStateType = {
   GlobalContextReducer: GlobalContextReducerType;
@@ -27,6 +28,7 @@ export type RootStateType = {
   SupplierReducer: SupplierReducerType;
   SupplyReducer: SupplyReducerType;
   ItemReducer: ItemReducerType;
+  TransactionReducer: TransactionyReducerType;
 }
 
 const store = configureStore({ reducer })

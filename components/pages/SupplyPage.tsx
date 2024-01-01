@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { RootStateType, useAppDispatch } from '@/store'
 import { useSelector } from 'react-redux'
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip, InputLabel, FormControl, TablePagination, Checkbox, ListItemText, Collapse, Box, Typography } from '@mui/material'
+import { Button, IconButton, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip, TablePagination, Checkbox, ListItemText, Collapse, Box, Typography } from '@mui/material'
 import { tooltipClasses } from '@mui/material/Tooltip'
 import NoData from '../NoData'
 import { KeyboardArrowDown, KeyboardArrowUp, InfoOutlined, ImportExport, ArrowRightAlt } from '@mui/icons-material';
@@ -11,6 +11,7 @@ import { FETCH_ALL_SUPPLIES, UPDATE_SUPPLY } from '@/store/actions/SupplyAction'
 import { Item } from '@/store/reducer/ItemReducer'
 import SwalModal from '@/helper/SwalModal'
 import { Supply as SupplyType } from '@/store/reducer/SupplyReducer'
+import parseNumber from '@/helper/parseNumber'
 
 export default function Supply() {
   const reduxSupplies = useSelector((state: RootStateType) => state.SupplyReducer.supplies)
@@ -23,10 +24,9 @@ export default function Supply() {
   const [hover, setHover] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(25)
   const [page, setPage] = useState(0)
-
+  const [transactionDescription, setTransactionDescription] = useState<Record<string, string>>({})
   const [supplierSearchNames, setSupplierSearchNames] = useState<string[]>(['Pilih Supplier'])
   const supplierSearchIds = useRef<string[]>([])
-
   const [paidSearchNames, setPaidSearchNames] = useState<string[]>(['Tidak Ada Yang Dipilih'])
   const paidSearchValues = useRef<boolean[]>([])
 
@@ -35,6 +35,12 @@ export default function Supply() {
   useEffect(() => {
     dispatch(FETCH_ALL_SUPPLIES({ limit: rowsPerPage, offset: page * rowsPerPage }))
   }, [])
+
+  useEffect(() => {
+    const val: Record<string, string> = {}
+    reduxSupplies.forEach(v => val[v.id] = v.notes || '-')
+    setTransactionDescription(val)
+  }, [reduxSupplies])
 
   useEffect(() => {
     filterSearch()
@@ -150,10 +156,6 @@ export default function Supply() {
   const moveToCreatePage = () => dispatch(SET_ROUTE('create-supply'))
 
   const parseDate = (d: Date) => {
-    const parseNumber = (n: number) => {
-      if (n < 10) return `0${n}`
-      return `${n}`
-    }
     const date = new Date(d)
     const day = date.getDate()
     const month = date.getMonth()
@@ -162,31 +164,32 @@ export default function Supply() {
     return `${parseNumber(day)}/${parseNumber(month + 1)}/${year}`
   }
 
-  const renderItem = (item: Item, liveDescription: string) => {
-    const el = [<Typography variant='caption'>{item.unique_id}</Typography>]
-    if (liveDescription) {
-      el.push((
-        <Tooltip title={liveDescription} arrow sx={{
-          [`& .${tooltipClasses.tooltip}`]: {
-            maxWidth: 'none',
-          }
-        }}>
-          <InfoOutlined style={{ fontSize: '14px', marginLeft: '5px' }} />
-        </Tooltip>
-      ))
-    }
+  const renderItem = (item: Item, liveItem: Item) => {
+    const priceCode = '0000'
+    const el = [<Typography variant='caption'>{item.unique_id}{priceCode}</Typography>]
+    let tooltipText = item.name
+    if (liveItem.description) tooltipText += ` (${liveItem.description})`
+    el.push((
+      <Tooltip title={tooltipText} arrow sx={{
+        [`& .${tooltipClasses.tooltip}`]: {
+          maxWidth: 'none',
+        }
+      }}>
+        <InfoOutlined style={{ fontSize: '14px', marginLeft: '5px' }} />
+      </Tooltip>
+    ))
 
     return (
-      <Box className='d-flex mt-2 align-items-center justify-content-between' width='60%'>
-        <Box width={"35%"} className="d-flex align-items-center">{el}</Box>
+      <Box className='d-flex mt-2 align-items-center justify-content-between' width='100%'>
+        <Box width={"25%"} className="d-flex align-items-center">{el}</Box>
         <Box width={"25%"} className='d-flex flex-space-between'>
           <Typography variant='caption'>{parseCurrency(item.buying_price)}</Typography>
           <Typography variant='caption'>x</Typography>
         </Box>
-        <Box width={"15%"} className='flex-center'>
-          <Typography variant='caption'>{item.stock}</Typography>
+        <Box width={"25%"} className='flex-center'>
+          <Typography variant='caption'>{item.stock} {liveItem.unit}</Typography>
         </Box>
-        <Box width={"25%"}>
+        <Box width={"25%"} className='d-flex flex-between pr-10'>
           <Typography variant='caption' className='mr-10'>=</Typography>
           <Typography variant='caption'>{parseCurrency(item.buying_price * item.stock)}</Typography>
         </Box>
@@ -207,7 +210,7 @@ export default function Supply() {
   const renderSupplierDetail = (s: SupplyType) => {
     if (s.is_paid) return (<></>)
     return (<>
-      <Box className='d-flex flex-space-between' width="80%">
+      <Box className='d-flex flex-space-between' width="100%">
         <Box className='width-20'>
           <Box className='d-flex flex-space-between'>
             <Typography variant='caption'>No. Rekening</Typography>
@@ -218,7 +221,7 @@ export default function Supply() {
           <Typography variant='caption'>{s.supplier.account_number}</Typography>
         </Box>
       </Box>
-      <Box className='d-flex flex-space-between' width='80%'>
+      <Box className='d-flex flex-space-between' width='100%'>
         <Box className='width-20'>
           <Box className='d-flex flex-space-between'>
             <Typography variant='caption'>Bank</Typography>
@@ -229,7 +232,7 @@ export default function Supply() {
           <Typography variant='caption'>{s.supplier.bank_name}</Typography>
         </Box>
       </Box>
-      <Box className='d-flex flex-space-between' width='80%'>
+      <Box className='d-flex flex-space-between' width='100%'>
         <Box className='width-20'>
           <Box className='d-flex flex-space-between'>
             <Typography variant='caption'>PIC</Typography>
@@ -240,10 +243,10 @@ export default function Supply() {
           <Typography variant='caption'>{s.supplier.contact_info} ({s.supplier.contact_person})</Typography>
         </Box>
       </Box>
-      <Box className='d-flex flex-space-between' width='80%'>
+      <Box className='d-flex flex-space-between' width='100%'>
         <Box className='width-20'>
           <Box className='d-flex flex-space-between'>
-            <Typography variant='caption'>Catatan</Typography>
+            <Typography variant='caption'>Catatan Supplier</Typography>
             <Typography variant='caption'>:</Typography>
           </Box>
         </Box>
@@ -280,6 +283,15 @@ export default function Supply() {
     return <ArrowRightAlt className={`btn-sort ${dueDateOrderBy === 'ASC' ? 'up' : 'down'}`} onClick={handleSortDueDate} />
   }
 
+  const handleDescriptionChange = (id: string, value: string) => setTransactionDescription({ ...transactionDescription, [id]: value })
+
+  const handleDescriptionOnBlur = (id: string) => {
+    const val = transactionDescription[id]
+    if (!val) setTransactionDescription({ ...transactionDescription, [id]: '-' })
+
+    dispatch(UPDATE_SUPPLY({ id, notes: transactionDescription[id] }))
+  }
+
   const renderData = () => {
     if (reduxSupplies.length) {
       return (
@@ -294,7 +306,7 @@ export default function Supply() {
                     <TableCell align="left" width='25%'>Supplier</TableCell>
                     <TableCell align="center" width='25%'>Status</TableCell>
                     <TableCell align="center" width='20%'>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Box>
                         Jatuh Tempo
                         {renderSortDueDate()}
                       </Box>
@@ -331,7 +343,7 @@ export default function Supply() {
                         <TableCell align="left" colSpan={4} className='p-0'>
                           <Collapse in={expandRow === index} timeout="auto" unmountOnExit>
                             <Box className='ml-40 mb-15'>
-                              <Box className='d-flex flex-space-between' width='80%'>
+                              <Box className='d-flex flex-space-between' width='100%'>
                                 <Box className='width-20'>
                                   <Box className='d-flex flex-space-between'>
                                     <Typography variant='caption'>Tanggal Masuk</Typography>
@@ -350,17 +362,39 @@ export default function Supply() {
                                 </Box>
                               </Box>
                               <Box className='d-flex flex-column flex-space-between ml-15'>
-                                {s.json_data.map((item: Item, index: number) => renderItem(item, s.items[index].description || item.description || ''))}
+                                {s.json_data.map((item: Item, index: number) => renderItem(item, s.items[index] || item))}
                               </Box>
-                              <Box className='d-flex flex-end ml-15 mb-5 mt-5' width='60%'>
-                                <Box sx={{ backgroundColor: 'black', height: '1px' }} width='65%' />
+                              <Box className='d-flex flex-end ml-15 mb-5 mt-5'>
+                                <Box sx={{ backgroundColor: 'black', height: '1px' }} width='75%' />
                               </Box>
-                              <Box className='d-flex flex-end mb-5 mt-5 pr-50' width='60%'>
+                              <Box className='d-flex flex-end mb-5 mt-5 pr-10'>
                                 <Typography variant='caption'><span style={{ fontWeight: "bold" }}>{parseCurrency(s.total_price)}</span></Typography>
                               </Box>
-
+                              <Box className='d-flex flex-space-between' width='100%'>
+                                <Box className='width-20'>
+                                  <Box className='d-flex flex-space-between'>
+                                    <Typography variant='caption'>Catatan Transaksi</Typography>
+                                    <Typography variant='caption'>:</Typography>
+                                  </Box>
+                                </Box>
+                                <Box className='width-80 ml-10' textAlign='justify'>
+                                  <TextField
+                                      type="text"
+                                      InputProps={{ disableUnderline: true }}
+                                      variant="standard"
+                                      value={transactionDescription[s.id]}
+                                      onChange={(e) => handleDescriptionChange(s.id, e.target.value)}
+                                      size='small'
+                                      sx={{ marginTop: '0px !important' }}
+                                      inputProps={{ style: { fontSize: '12px', textAlign: 'justify' } }}
+                                      onBlur={e => handleDescriptionOnBlur(s.id)}
+                                      fullWidth
+                                      className='mb-5 mt-5'
+                                      multiline
+                                    />
+                                </Box>
+                              </Box>
                               {renderSupplierDetail(s)}
-
                             </Box>
                           </Collapse>
                         </TableCell>

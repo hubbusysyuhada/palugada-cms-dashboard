@@ -1,0 +1,203 @@
+@import "styles/variables.module";
+
+.create-transaction-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  
+  .content {
+    display: flex;
+    flex-direction: column;
+    margin-top: 25px;
+    height: 70vh;
+    overflow-y: scroll;
+
+    .form {
+      justify-content: center;
+      width: 95%;
+    
+      .form-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 50%;
+        margin-bottom: 8px;
+    
+        &.multiline {
+          align-items: start !important;
+          p, h1, h2, h3, h4 {
+            margin-top: 4px;
+          }
+        }
+    
+        .user-input {
+          display: flex;
+          width: 70%;
+        }
+      }
+    }
+
+    .form-service, .form-item, .form-mechanic {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+
+      &.form-mechanic {
+        width: 50%;
+
+        .mechanics {
+          padding-left: 32px;
+          display: flex;
+          flex-direction: column;
+          width: 35%;
+          div {
+            display: flex;
+            align-items: center;
+  
+            h4 {
+              margin-right: 10px;
+            }
+          }
+          
+        }
+      }
+
+      &.form-service {
+        width: 50%;
+
+        .services {
+          padding-left: 32px;
+          display: flex;
+          flex-direction: column;
+          width: 80%;
+          div {
+            display: flex;
+            align-items: center;
+            p, h4 {
+              margin: 0;
+              margin-right: 10px;
+            }
+          }
+        }
+      }
+
+      &.form-item {
+        width: 50%;
+
+        .items {
+          padding-left: 32px;
+          display: flex;
+          flex-direction: column;
+          width: 90%;
+          div {
+            display: flex;
+            align-items: center;
+            p, h4 {
+              margin: 0;
+              margin-right: 10px;
+            }
+          }
+        }
+
+        .item-table-container {
+          margin-left: 32px;
+          display: flex;
+          flex-direction: column;
+
+          position: absolute;
+
+          .table-parent {
+            box-shadow: none !important;
+          }
+
+          .add-item-btn {
+            height: 16px;
+            &:disabled {
+              background-color: #EDECEC !important;
+            }
+            p {
+              font-size: 8px;
+            }
+          }
+        }
+      }
+
+      .add-btn-container {
+        margin-top: 10px;
+        padding-left: 32px;
+        display: flex;
+        justify-content: flex-start;
+
+        .add-btn {
+          height: 16px;
+
+          &:disabled {
+            background-color: #EDECEC !important;
+          }
+        }
+
+        p {
+          font-size: 8px;
+        }
+      }
+
+      .accordion {
+        width: 100%;
+        &:before {
+          height: 0px;
+        }
+
+        .accordion-content {
+          padding-left: 0px;
+          background-color: $secondary-color;
+        }
+      }
+    }
+  }
+  
+  .title-container {
+    padding-top: 30px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  
+    .back-btn {
+      display: flex;
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+  
+  .submit-btn-container {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+  
+    .save-btn {
+      margin: 35px;
+  
+      &:disabled {
+        background-color: #EDECEC !important;
+      }
+    }
+  }
+
+  .total-price {
+    text-align: start;
+    font-size: 14px;
+    background-color: $secondary-color;
+    font-weight: bold !important;
+  }
+
+  .price, .item-detail {
+    text-align: start;
+    font-size: 14px;
+    background-color: $secondary-color;
+    font-weight: 400;
+  }
+  
+  .bg-default {
+    background-color: $secondary-color;
+  }
+}
