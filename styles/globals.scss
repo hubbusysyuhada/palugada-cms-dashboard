@@ -194,11 +194,17 @@ table {
   height: 8px;
   width: 8px;
   border-radius: 8px;
-
   &.red {
     background-color: red;
   }
   &.green {
     background-color: green;
   }
+}
+
+.font-green {
+  color: green !important;
+}
+.font-red {
+  color: red !important;
 }

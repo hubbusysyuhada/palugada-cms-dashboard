@@ -1,0 +1,39 @@
+@import "styles/variables.module";
+
+.insight-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  
+  .title-container {
+    padding-top: 30px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  
+    .back-btn {
+      display: flex;
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+  
+  .btn-container {
+    button {
+      &:disabled {
+        background-color: #EDECEC !important;
+      }
+    }
+  }
+
+  .content-container {
+    .content {
+      margin-top: 20px;
+    }
+
+  }
+  .selected {
+    color: #6A32CB !important;
+  }
+}

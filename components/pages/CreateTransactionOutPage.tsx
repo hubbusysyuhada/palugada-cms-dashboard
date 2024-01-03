@@ -1,36 +1,19 @@
-import { RootStateType, useAppDispatch } from "@/store"
+import { useAppDispatch } from "@/store"
 import { Accordion, AccordionDetails, AccordionSummary, Box, Button, IconButton, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField, Tooltip, Typography } from "@mui/material"
 import { ArrowBackIosRounded, Delete, Close, ExpandMore } from '@mui/icons-material';
 import { useEffect, useRef, useState } from "react"
-import { useSelector } from "react-redux"
 import useStyle from 'styles/CreateTransaction.module.scss'
 import { SET_ROUTE } from "@/store/actions/GlobalContextAction";
 import SwalModal from "@/helper/SwalModal";
 import { NumericFormat } from "react-number-format";
-import { Item } from "@/store/reducer/ItemReducer";
 import { CREATE_TRANSACTION } from "@/store/actions/TransactionAction";
 import { ServiceType } from "@/store/reducer/TransactionReducer";
 import { ItemPayloadType, TransactionPayloadType } from "./CreateTransactionInPage";
+import parseCurrency from "@/helper/parseCurrency";
 
 const style = (key: string | string[]) => {
   if (Array.isArray(key)) return key.map(v => (useStyle[v] || v)).join(' ')
   return useStyle[key] || key
-}
-
-const parseCurrency = (n: number, prefix = 'Rp. ') => {
-  const str = String(n)
-  let res: string[] = []
-  let counter = 0
-  for (let i = str.length - 1; i > 0 - 1; i--) {
-    res.unshift(str[i])
-    counter++
-    if (counter === 3 && i) {
-      res.unshift('.')
-      counter = 0
-    }
-  }
-
-  return `${prefix}${res.join('')}`
 }
 
 export default function CreateTransactionOut() {

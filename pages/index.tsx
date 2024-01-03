@@ -5,9 +5,17 @@ import { useSelector } from 'react-redux'
 import { useRouter } from 'next/router'
 import Navbar from '@/components/navbar'
 import { FETCH_FEATURES, FETCH_USER } from '@/store/actions/AuthAction'
-import { CatalogPage, CategoryPage, CreateSupplyPage, CreateTransactionInPage, CreateTransactionOutPage, EmployeePage, ItemPage, RBACPage, RackPage, SubCategoryPage, SupplierPage, SupplyPage, TransactionPage, UserPage } from '@/components/pages'
+import { CatalogPage, CategoryPage, CreateSupplyPage, CreateTransactionInPage, CreateTransactionOutPage, EmployeePage, InsightPage, ItemPage, RBACPage, RackPage, SubCategoryPage, SupplierPage, SupplyPage, TransactionPage, UserPage } from '@/components/pages'
+import { GetStaticProps } from 'next'
+import { readFileSync } from 'fs'
+import path from 'path'
 
-export default function RootPage() {
+export const getStaticProps = (async (context) => {
+  const base64Logo = readFileSync(path.join(process.cwd() + '/public/company-logo.png'), 'base64')
+  return { props: { base64Logo } }
+}) satisfies GetStaticProps<{ base64Logo: string }>
+
+export default function RootPage(props: any) {
   const reduxRouteName = useSelector((state: RootStateType) => state.GlobalContextReducer.routeName)
   const dispatch = useAppDispatch()
   const route = useRouter()
@@ -48,12 +56,14 @@ export default function RootPage() {
         return <ItemPage />
       case "create-supply":
         return <CreateSupplyPage />
-        case "transactions":
-          return <TransactionPage />
-        case "create-transaction-in":
-          return <CreateTransactionInPage />
-        case "create-transaction-out":
-          return <CreateTransactionOutPage />
+      case "transactions":
+        return <TransactionPage base64Logo={props.base64Logo} />
+      case "create-transaction-in":
+        return <CreateTransactionInPage />
+      case "create-transaction-out":
+        return <CreateTransactionOutPage />
+      case "insight":
+        return <InsightPage />
       default:
         return (<div><h1>{reduxRouteName}</h1></div>)
     }

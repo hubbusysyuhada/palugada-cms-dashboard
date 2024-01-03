@@ -461,7 +461,7 @@ export default function Transaction(props: { base64Logo: string }) {
         <SpeedDial ariaLabel='speed dial for transaction action' direction='down' icon={<SpeedDialIcon icon={<Settings />} />} FabProps={{ sx: { bgcolor: "#6A32CB", '&:hover': { bgcolor: "#6A32CB" } } }}>
           <SpeedDialAction key="add" icon={<AddShoppingCart onClick={() => moveToPage('create-transaction-in')} />} tooltipTitle="Tambah Transaksi Masuk" />
           <SpeedDialAction key="add" icon={<ProductionQuantityLimits onClick={() => moveToPage('create-transaction-out')} />} tooltipTitle="Tambah Transaksi Keluar" />
-          {/* <SpeedDialAction key="add" icon={<BarChart onClick={() => moveToPage('insight')} />} tooltipTitle="Statistik" /> */}
+          <SpeedDialAction key="add" icon={<BarChart onClick={() => moveToPage('insight')} />} tooltipTitle="Statistik" />
         </SpeedDial>
       </div>
       <div className='table-content width-80'>

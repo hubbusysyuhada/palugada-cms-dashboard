@@ -4,7 +4,7 @@ import { throwErr } from "./RBACAction";
 import { SET_LOADING, SET_ROUTE } from "./GlobalContextAction";
 import _ from "lodash";
 import { TransactionPayloadType } from "@/components/pages/CreateTransactionInPage";
-import { ServiceType, TypeOfTransactionType } from "../reducer/TransactionReducer";
+import { InsightSeriesType, ServiceType, TypeOfTransactionType } from "../reducer/TransactionReducer";
 
 export const FETCH_ALL_TRANSACTIONS = (payload: Partial<{ keywords: string; type: TypeOfTransactionType[]; startDate: string; endDate: string; limit: number; offset: number; orderBy: [string, "ASC" | "DESC"][] }>) => {
   return async (dispatch: UseAppDispatchType) => {
@@ -68,5 +68,22 @@ export const CREATE_TRANSACTION = (payload: CreateTransactionPayloadType, type: 
     } catch (error) {
       throwErr(error)
     }
+  }
+}
+
+export const FETCH_INSIGHT = (startDate: string, endDate: string, series: InsightSeriesType) => {
+  return async (dispatch: UseAppDispatchType) => {
+    dispatch(SET_LOADING(true))
+    const url = `/transactions/insight?start_date=${startDate}&end_date=${endDate}&series=${series}`
+    const token = localStorage.getItem('access_token')
+    const { data } = await axios.get(url, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      },
+    })
+    if (data) {
+      dispatch({ type: 'transaction/set-insight', payload: { insight: data.data } })
+    }
+    dispatch(SET_LOADING(false))
   }
 }
