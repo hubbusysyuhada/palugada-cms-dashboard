@@ -10,8 +10,12 @@ import { Transaction as TransactionType, TypeOfTransactionType } from '@/store/r
 import { DatePicker } from '@mui/x-date-pickers'
 import dayjs from 'dayjs'
 import parseNumber from '@/helper/parseNumber'
+import pdfMake from 'pdfmake/build/pdfmake'
+import * as pdfFonts from "pdfmake/build/vfs_fonts";
+import generatePdfMetadata from '@/helper/generatePdfMetadata'
+import parseCurrency from '@/helper/parseCurrency'
 
-export default function Transaction() {
+export default function Transaction(props: { base64Logo: string }) {
   const reduxTransactions = useSelector((state: RootStateType) => state.TransactionReducer.transactions)
   const totalRow = useSelector((state: RootStateType) => state.TransactionReducer.totalRow)
   const [expandRow, setExpandRow] = useState(-1)
@@ -127,7 +131,7 @@ export default function Transaction() {
 
   }
 
-  const moveToCreatePage = (type: TypeOfTransactionType) => dispatch(SET_ROUTE('create-transaction-' + type.toLowerCase()))
+  const moveToPage = (type: string) => dispatch(SET_ROUTE(type))
 
   const formatDate = (d: Date) => {
     const date = new Date(d)
@@ -137,8 +141,6 @@ export default function Transaction() {
 
     return `${parseNumber(day)}/${parseNumber(month + 1)}/${year}`
   }
-
-  const parseCurrency = (n: number) => `Rp. ${n.toLocaleString('id')}`
 
   const handleSortCreatedAt = () => {
     switch (createdAtOrderBy) {
@@ -166,6 +168,12 @@ export default function Transaction() {
         <Typography variant='caption'>{type === 'OUT' ? 'KELUAR' : 'MASUK'}</Typography>
       </div>
     )
+  }
+
+  const printPdf = async (t: TransactionType) => {
+    pdfMake.vfs = pdfFonts.pdfMake.vfs;
+    const metadata = await generatePdfMetadata(t, props.base64Logo)
+    pdfMake.createPdf(metadata).open();
   }
 
   const renderTransactionDetail = (t: TransactionType) => {
@@ -274,9 +282,9 @@ export default function Transaction() {
         <Box className='d-flex flex-column flex-space-between ml-30 mb-10'>
           {t.transaction_items.map((ti, index) => (
             <Box className='d-flex mt-2 justify-content-between' width='100%'>
-              <Box width={"40%"} className="d-flex">
+              <Box width={"50%"} className="d-flex">
                 <Typography variant='caption' className='mr-10'>{index + 1}.</Typography>
-                <Typography variant='caption'>{ti.item.name}</Typography>
+                <Typography variant='caption'>{ti.item.unique_id} - {ti.item.name}</Typography>
               </Box>
               <Box className="d-flex">
                 <Typography variant='caption' className='mr-10'>{ti.amount} {ti.item.unit}</Typography>
@@ -305,7 +313,7 @@ export default function Transaction() {
 
         <Box className="d-flex flex-row-reverse">
           <Tooltip title="Cetak Kwitansi">
-            <IconButton onClick={() => { }}>
+            <IconButton onClick={() => printPdf(t)}>
               <Print sx={{ color: '#6A32CB' }} fontSize='small' />
             </IconButton>
           </Tooltip>
@@ -368,7 +376,6 @@ export default function Transaction() {
         </Box>
       </Box>
     )
-
   }
 
   const renderData = () => {
@@ -452,9 +459,9 @@ export default function Transaction() {
     <div className="root-with-filter">
       <div className="register-container">
         <SpeedDial ariaLabel='speed dial for transaction action' direction='down' icon={<SpeedDialIcon icon={<Settings />} />} FabProps={{ sx: { bgcolor: "#6A32CB", '&:hover': { bgcolor: "#6A32CB" } } }}>
-          <SpeedDialAction key="add" icon={<AddShoppingCart onClick={() => moveToCreatePage('IN')} />} tooltipTitle="Tambah Transaksi Masuk" />
-          <SpeedDialAction key="add" icon={<ProductionQuantityLimits onClick={() => moveToCreatePage('OUT')} />} tooltipTitle="Tambah Transaksi Keluar" />
-          {/* <SpeedDialAction key="add" icon={<BarChart/>} tooltipTitle="Statistik"/> */}
+          <SpeedDialAction key="add" icon={<AddShoppingCart onClick={() => moveToPage('create-transaction-in')} />} tooltipTitle="Tambah Transaksi Masuk" />
+          <SpeedDialAction key="add" icon={<ProductionQuantityLimits onClick={() => moveToPage('create-transaction-out')} />} tooltipTitle="Tambah Transaksi Keluar" />
+          {/* <SpeedDialAction key="add" icon={<BarChart onClick={() => moveToPage('insight')} />} tooltipTitle="Statistik" /> */}
         </SpeedDial>
       </div>
       <div className='table-content width-80'>

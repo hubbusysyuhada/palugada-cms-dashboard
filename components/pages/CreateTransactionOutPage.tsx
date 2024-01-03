@@ -76,7 +76,7 @@ export default function CreateTransactionOut() {
       ...payload,
       services,
       mechanicIds: [],
-      items: items.map(({id, amount}) => ({ id, amount })),
+      items: items.map(({ id, amount }) => ({ id, amount })),
     }
     SwalModal({
       action: () => dispatch(CREATE_TRANSACTION(data, "OUT")),
@@ -131,10 +131,10 @@ export default function CreateTransactionOut() {
           <ArrowBackIosRounded />
           <p>BACK</p>
         </div>
+        <h2>Buat Transaksi Keluar Baru</h2>
         <div />
       </div>
 
-      <h2>Buat Transaksi Keluar Baru</h2>
 
       <div className={style('content')}>
 
@@ -171,7 +171,7 @@ export default function CreateTransactionOut() {
               <TextField
                 className="text-align-left"
                 value={payload.notes}
-                onChange={e => {if (e.target.value.length <= 255) setPayload({ ...payload, notes: e.target.value })}}
+                onChange={e => { if (e.target.value.length <= 255) setPayload({ ...payload, notes: e.target.value }) }}
                 placeholder='Catatan Transaksi'
                 variant="standard"
                 fullWidth

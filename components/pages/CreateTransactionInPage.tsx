@@ -90,7 +90,7 @@ export default function CreateTransactionIn() {
     setTotalPrice(total)
   }, [services, items])
 
-  const backToSupplies = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const backToTransactions = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.preventDefault()
     SwalModal({
       icon: 'question',
@@ -105,7 +105,7 @@ export default function CreateTransactionIn() {
       ...payload,
       services,
       mechanicIds,
-      items: items.map(({id, amount}) => ({ id, amount })),
+      items: items.map(({ id, amount }) => ({ id, amount })),
     }
     SwalModal({
       action: () => dispatch(CREATE_TRANSACTION(data, "IN")),
@@ -270,265 +270,263 @@ export default function CreateTransactionIn() {
 
   return (
     <div className={style('create-transaction-container')}>
-
       <div className={style('title-container')}>
-        <div className={style('back-btn')} onClick={backToSupplies}>
+        <div className={style('back-btn')} onClick={backToTransactions}>
           <ArrowBackIosRounded />
           <p>BACK</p>
         </div>
-        <div />
-      </div>
-
       <h2>Buat Transaksi Masuk Baru</h2>
+      <div />
+    </div>
 
-      <div className={style('content')}>
+    <div className={style('content')}>
 
-        <div className={style('form')}>
-          <div className={style('form-group')}>
-            <h4>Nama</h4>
-            <div className={style('user-input')}>
-              <TextField
-                className="text-align-left"
-                value={payload.customer_name}
-                onChange={e => setPayload({ ...payload, customer_name: e.target.value })}
-                placeholder='Nama Pemilik Kendaraan'
-                variant="standard"
-                fullWidth
-              />
-            </div>
-          </div>
-          <div className={style('form-group')}>
-            <h4>Nomor HP</h4>
-            <div className={style('user-input')}>
-              <TextField
-                className="text-align-left"
-                value={payload.customer_phone}
-                onChange={e => setPayload({ ...payload, customer_phone: e.target.value })}
-                placeholder='Nomor HP'
-                variant="standard"
-                fullWidth
-              />
-            </div>
-          </div>
-          <div className={style('form-group')}>
-            <h4>Kendaraan</h4>
-            <div className={style('user-input')}>
-              <TextField
-                className="text-align-left"
-                value={payload.vehicle_type}
-                onChange={e => setPayload({ ...payload, vehicle_type: e.target.value })}
-                placeholder='Jenis Kendaraan'
-                variant="standard"
-                fullWidth
-              />
-            </div>
-          </div>
-          <div className={style('form-group')}>
-            <h4>Nomor Kendaraan</h4>
-            <div className={style('user-input')}>
-              <TextField
-                className="text-align-left"
-                value={payload.plate_number}
-                onChange={e => setPayload({ ...payload, plate_number: e.target.value })}
-                placeholder='Nomor Polisi/Registrasi Kendaraan'
-                variant="standard"
-                fullWidth
-              />
-            </div>
-          </div>
-          <div className={style(['form-group', 'multiline'])}>
-            <h4>Catatan</h4>
-            <div className={style('user-input')}>
-              <TextField
-                className="text-align-left"
-                value={payload.notes}
-                onChange={e => setPayload({ ...payload, notes: e.target.value })}
-                placeholder='Catatan Transaksi'
-                variant="standard"
-                fullWidth
-                multiline
-                maxRows={4}
-              />
-            </div>
-          </div>
-          <div className={style('form-group')}>
-            <h4>Total</h4>
-            <div className={style('user-input')}>
-              <NumericFormat
-                className={style(["react-number-input", "total-price"])}
-                value={totalPrice}
-                prefix="Rp. "
-                thousandSeparator="."
-                decimalSeparator=","
-                disabled
-              />
-            </div>
+      <div className={style('form')}>
+        <div className={style('form-group')}>
+          <h4>Nama</h4>
+          <div className={style('user-input')}>
+            <TextField
+              className="text-align-left"
+              value={payload.customer_name}
+              onChange={e => setPayload({ ...payload, customer_name: e.target.value })}
+              placeholder='Nama Pemilik Kendaraan'
+              variant="standard"
+              fullWidth
+            />
           </div>
         </div>
+        <div className={style('form-group')}>
+          <h4>Nomor HP</h4>
+          <div className={style('user-input')}>
+            <TextField
+              className="text-align-left"
+              value={payload.customer_phone}
+              onChange={e => setPayload({ ...payload, customer_phone: e.target.value })}
+              placeholder='Nomor HP'
+              variant="standard"
+              fullWidth
+            />
+          </div>
+        </div>
+        <div className={style('form-group')}>
+          <h4>Kendaraan</h4>
+          <div className={style('user-input')}>
+            <TextField
+              className="text-align-left"
+              value={payload.vehicle_type}
+              onChange={e => setPayload({ ...payload, vehicle_type: e.target.value })}
+              placeholder='Jenis Kendaraan'
+              variant="standard"
+              fullWidth
+            />
+          </div>
+        </div>
+        <div className={style('form-group')}>
+          <h4>Nomor Kendaraan</h4>
+          <div className={style('user-input')}>
+            <TextField
+              className="text-align-left"
+              value={payload.plate_number}
+              onChange={e => setPayload({ ...payload, plate_number: e.target.value })}
+              placeholder='Nomor Polisi/Registrasi Kendaraan'
+              variant="standard"
+              fullWidth
+            />
+          </div>
+        </div>
+        <div className={style(['form-group', 'multiline'])}>
+          <h4>Catatan</h4>
+          <div className={style('user-input')}>
+            <TextField
+              className="text-align-left"
+              value={payload.notes}
+              onChange={e => setPayload({ ...payload, notes: e.target.value })}
+              placeholder='Catatan Transaksi'
+              variant="standard"
+              fullWidth
+              multiline
+              maxRows={4}
+            />
+          </div>
+        </div>
+        <div className={style('form-group')}>
+          <h4>Total</h4>
+          <div className={style('user-input')}>
+            <NumericFormat
+              className={style(["react-number-input", "total-price"])}
+              value={totalPrice}
+              prefix="Rp. "
+              thousandSeparator="."
+              decimalSeparator=","
+              disabled
+            />
+          </div>
+        </div>
+      </div>
 
-        <div className={style(['form-mechanic', 'mt-10'])}>
-          <Accordion elevation={0} className={style(['accordion'])}>
-            <AccordionSummary className={style(['accordion-content'])} expandIcon={<ExpandMore />}>
-              <h4>Mekanik</h4>
-            </AccordionSummary>
-            <AccordionDetails className={style(['accordion-content'])}>
-              <div className={style(['mechanics'])}>
-                {mechanicIds.map((v, i) => (
-                  <div>
-                    <h4>{i + 1}.</h4>
-                    <Select
-                      value={v}
-                      label="mechanic"
-                      variant="standard"
-                      disableUnderline
-                      onChange={e => handleChangeMechanic(i, e.target.value)}
-                      fullWidth
-                    >
-                      {reduxEmployees.filter(e => !mechanicIds.includes(e.id) || e.id === v).map((e) => (
-                        <MenuItem value={e.id} selected={v === e.id}>{e.name}</MenuItem>
-                      ))}
-                    </Select>
+      <div className={style(['form-mechanic', 'mt-10'])}>
+        <Accordion elevation={0} className={style(['accordion'])}>
+          <AccordionSummary className={style(['accordion-content'])} expandIcon={<ExpandMore />}>
+            <h4>Mekanik</h4>
+          </AccordionSummary>
+          <AccordionDetails className={style(['accordion-content'])}>
+            <div className={style(['mechanics'])}>
+              {mechanicIds.map((v, i) => (
+                <div>
+                  <h4>{i + 1}.</h4>
+                  <Select
+                    value={v}
+                    label="mechanic"
+                    variant="standard"
+                    disableUnderline
+                    onChange={e => handleChangeMechanic(i, e.target.value)}
+                    fullWidth
+                  >
+                    {reduxEmployees.filter(e => !mechanicIds.includes(e.id) || e.id === v).map((e) => (
+                      <MenuItem value={e.id} selected={v === e.id}>{e.name}</MenuItem>
+                    ))}
+                  </Select>
+                  <Tooltip title="Hapus">
+                    <IconButton onClick={(e) => {
+                      e.stopPropagation()
+                      handleDeleteMechanic(i)
+                    }}>
+                      <Delete fontSize='small' />
+                    </IconButton>
+                  </Tooltip>
+                </div>
+              ))}
+            </div>
+
+            <div className={style(['add-btn-container'])}>
+              <Button
+                variant="contained"
+                className={style(['global-btn', 'add-btn'])}
+                onClick={handleAddMechanic}
+                disabled={mechanicIds.length === reduxEmployees.length}
+              >
+                <Typography>Tambah Mekanik</Typography>
+              </Button>
+            </div>
+          </AccordionDetails>
+        </Accordion>
+      </div>
+
+      <div className={style(['form-service', 'mt-10'])}>
+        <Accordion elevation={0} className={style(['accordion'])}>
+          <AccordionSummary className={style(['accordion-content'])} expandIcon={<ExpandMore />}>
+            <h4>Jasa</h4>
+          </AccordionSummary>
+          <AccordionDetails className={style(['accordion-content'])}>
+            <div className={style(['services'])}>
+              {services.map((v, i) => (
+                <div>
+                  <Typography>{i + 1}.</Typography>
+                  <TextField
+                    type="text"
+                    InputProps={{ disableUnderline: true }}
+                    placeholder="Nama Jasa"
+                    variant="standard"
+                    value={v.name}
+                    onChange={(e) => handleChangeService(i, e.target.value, 'name')}
+                    fullWidth
+                  />
+                  <TextField
+                    type="text"
+                    InputProps={{ disableUnderline: true }}
+                    className={style(["react-number-input", "price"])}
+                    variant="standard"
+                    value={parseCurrency(services[i].price)}
+                    onChange={(e) => handleChangeService(i, e.target.value, 'price')}
+                    fullWidth
+                  />
+                  <Tooltip title="Hapus">
+                    <IconButton onClick={(e) => {
+                      e.stopPropagation()
+                      handleDeleteService(i)
+                    }}>
+                      <Delete fontSize='small' />
+                    </IconButton>
+                  </Tooltip>
+                </div>
+              ))}
+            </div>
+
+            <div className={style(['add-btn-container'])}>
+              <Button
+                variant="contained"
+                className={style(['global-btn', 'add-btn'])}
+                onClick={handleAddService}
+              >
+                <Typography>Tambah Jasa</Typography>
+              </Button>
+            </div>
+          </AccordionDetails>
+        </Accordion>
+      </div>
+
+      <div className={style(['form-item', 'mt-10'])}>
+        <Accordion elevation={0} className={style(['accordion'])}>
+          <AccordionSummary className={style(['accordion-content'])} expandIcon={<ExpandMore />}>
+            <h4>Barang</h4>
+          </AccordionSummary>
+          <AccordionDetails className={style(['accordion-content'])}>
+            <div className={style(['items'])}>
+              {items.map((item, i) => (
+                <div className="width-100 flex-between">
+                  <div className="width-5">
+                    <Typography className={style(["item-detail"])}>{i + 1}.</Typography>
+                  </div>
+                  <div className="width-40">
+                    <Typography className={style(["item-detail"])}>{item.name}</Typography>
+                  </div>
+                  <div className="width-20 flex-start">
+                    <NumericFormat
+                      onKeyDown={(e) => { if (e.key === '-') e.preventDefault() }}
+                      className={style(["react-number-input", "bg-default"])}
+                      min={1}
+                      max={item.stock}
+                      size={20}
+                      value={item.amount}
+                      thousandSeparator="."
+                      decimalSeparator=","
+                      onValueChange={v => handleItemAmountChange(i, +v.value)}
+                    />
+                    <Typography className={style(["item-detail", "ml-10"])}>{item.unit}</Typography>
+                  </div>
+                  <div className="width-25 flex-end">
+                    <Typography className={style(["item-detail", "total-price"])}>{parseCurrency(item.amount * item.price)}</Typography>
+                  </div>
+                  <div className="width-10">
                     <Tooltip title="Hapus">
                       <IconButton onClick={(e) => {
                         e.stopPropagation()
-                        handleDeleteMechanic(i)
+                        handleDeleteItem(i)
                       }}>
                         <Delete fontSize='small' />
                       </IconButton>
                     </Tooltip>
                   </div>
-                ))}
-              </div>
-
-              <div className={style(['add-btn-container'])}>
-                <Button
-                  variant="contained"
-                  className={style(['global-btn', 'add-btn'])}
-                  onClick={handleAddMechanic}
-                  disabled={mechanicIds.length === reduxEmployees.length}
-                >
-                  <Typography>Tambah Mekanik</Typography>
-                </Button>
-              </div>
-            </AccordionDetails>
-          </Accordion>
-        </div>
-
-        <div className={style(['form-service', 'mt-10'])}>
-          <Accordion elevation={0} className={style(['accordion'])}>
-            <AccordionSummary className={style(['accordion-content'])} expandIcon={<ExpandMore />}>
-              <h4>Jasa</h4>
-            </AccordionSummary>
-            <AccordionDetails className={style(['accordion-content'])}>
-              <div className={style(['services'])}>
-                {services.map((v, i) => (
-                  <div>
-                    <Typography>{i + 1}.</Typography>
-                    <TextField
-                      type="text"
-                      InputProps={{ disableUnderline: true }}
-                      placeholder="Nama Jasa"
-                      variant="standard"
-                      value={v.name}
-                      onChange={(e) => handleChangeService(i, e.target.value, 'name')}
-                      fullWidth
-                    />
-                    <TextField
-                      type="text"
-                      InputProps={{ disableUnderline: true }}
-                      className={style(["react-number-input", "price"])}
-                      variant="standard"
-                      value={parseCurrency(services[i].price)}
-                      onChange={(e) => handleChangeService(i, e.target.value, 'price')}
-                      fullWidth
-                    />
-                    <Tooltip title="Hapus">
-                      <IconButton onClick={(e) => {
-                        e.stopPropagation()
-                        handleDeleteService(i)
-                      }}>
-                        <Delete fontSize='small' />
-                      </IconButton>
-                    </Tooltip>
-                  </div>
-                ))}
-              </div>
-
-              <div className={style(['add-btn-container'])}>
-                <Button
-                  variant="contained"
-                  className={style(['global-btn', 'add-btn'])}
-                  onClick={handleAddService}
-                >
-                  <Typography>Tambah Jasa</Typography>
-                </Button>
-              </div>
-            </AccordionDetails>
-          </Accordion>
-        </div>
-
-        <div className={style(['form-item', 'mt-10'])}>
-          <Accordion elevation={0} className={style(['accordion'])}>
-            <AccordionSummary className={style(['accordion-content'])} expandIcon={<ExpandMore />}>
-              <h4>Barang</h4>
-            </AccordionSummary>
-            <AccordionDetails className={style(['accordion-content'])}>
-              <div className={style(['items'])}>
-                {items.map((item, i) => (
-                  <div className="width-100 flex-between">
-                    <div className="width-5">
-                      <Typography className={style(["item-detail"])}>{i + 1}.</Typography>
-                    </div>
-                    <div className="width-40">
-                      <Typography className={style(["item-detail"])}>{item.name}</Typography>
-                    </div>
-                    <div className="width-20 flex-start">
-                      <NumericFormat
-                        onKeyDown={(e) => { if (e.key === '-') e.preventDefault() }}
-                        className={style(["react-number-input", "bg-default"])}
-                        min={1}
-                        max={item.stock}
-                        size={20}
-                        value={item.amount}
-                        thousandSeparator="."
-                        decimalSeparator=","
-                        onValueChange={v => handleItemAmountChange(i, +v.value)}
-                      />
-                      <Typography className={style(["item-detail", "ml-10"])}>{item.unit}</Typography>
-                    </div>
-                    <div className="width-25 flex-end">
-                      <Typography className={style(["item-detail", "total-price"])}>{parseCurrency(item.amount * item.price)}</Typography>
-                    </div>
-                    <div className="width-10">
-                      <Tooltip title="Hapus">
-                        <IconButton onClick={(e) => {
-                          e.stopPropagation()
-                          handleDeleteItem(i)
-                        }}>
-                          <Delete fontSize='small' />
-                        </IconButton>
-                      </Tooltip>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              {renderItemTable()}
-            </AccordionDetails>
-          </Accordion>
-        </div>
-
+                </div>
+              ))}
+            </div>
+            {renderItemTable()}
+          </AccordionDetails>
+        </Accordion>
       </div>
 
-      <div className={style('submit-btn-container')}>
-        <Button
-          variant="contained"
-          className={style(['global-btn', 'save-btn'])}
-          onClick={handleSave}
-          disabled={isSaveDisabled}
-        >
-          Simpan
-        </Button>
-      </div>
+    </div>
+
+    <div className={style('submit-btn-container')}>
+      <Button
+        variant="contained"
+        className={style(['global-btn', 'save-btn'])}
+        onClick={handleSave}
+        disabled={isSaveDisabled}
+      >
+        Simpan
+      </Button>
+    </div>
     </div>
   )
 }

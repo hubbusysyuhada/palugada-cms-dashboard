@@ -32,7 +32,6 @@ export default async (payload: SwalModalPayloadType) => {
 
   const { isConfirmed } = await Swal.fire(options)
   if (isConfirmed && action) {
-    console.log("sini");
     action()
   }
 }

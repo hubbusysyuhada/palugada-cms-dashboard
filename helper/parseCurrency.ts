@@ -1,0 +1,1 @@
+export default (n: number) => `Rp. ${n.toLocaleString('id')}`
