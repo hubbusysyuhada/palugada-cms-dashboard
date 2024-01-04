@@ -57,7 +57,7 @@ export const DEACTIVE_EMPLOYEE = (id: string) => {
   }
 }
 
-export const UPDATE_EMPLOYEE = (id: string, payload: { name: string; idKaryawan: string; }) => {
+export const UPDATE_EMPLOYEE = (id: string, payload: { name: string; idKaryawan: string; title: string; }) => {
   return async (dispatch: UseAppDispatchType) => {
     try {
       const token = localStorage.getItem('access_token')

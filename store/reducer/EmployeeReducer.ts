@@ -9,6 +9,7 @@ export type Employee = {
   id: string;
   name: string;
   idKaryawan: string;
+  title: string;
 }
 
 const initialState: EmployeeReducerType = {

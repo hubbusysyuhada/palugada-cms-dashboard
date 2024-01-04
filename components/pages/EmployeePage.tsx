@@ -19,10 +19,12 @@ export default function Employee() {
   const totalRow = useSelector((state: RootStateType) => state.EmployeeReducer.totalRow)
   const [newName, setNewName] = useState('')
   const [newIdKaryawan, setNewIdKaryawan] = useState('')
+  const [newTitleKaryawan, setNewTitleKaryawan] = useState('')
   const [editEmployee, setEditEmployee] = useState<EmployeeType>({
     id: '',
     name: '',
-    idKaryawan: ''
+    idKaryawan: '',
+    title: ''
   })
   const [duplicateError, setDuplicateError] = useState(true)
   const [disableAddBtn, setDisableAddBtn] = useState(true)
@@ -79,7 +81,7 @@ export default function Employee() {
 
   const closeEditModal = () => {
     setOpenEditModal(false)
-    setEditEmployee({ id: '', name: '', idKaryawan: '' })
+    setEditEmployee({ id: '', name: '', idKaryawan: '', title: '' })
     setDisableEditBtn(true)
   }
 
@@ -90,7 +92,8 @@ export default function Employee() {
 
   const saveEmployee = (e: any) => {
     e.preventDefault()
-    dispatch(UPDATE_EMPLOYEE(editEmployee.id, {name: editEmployee.name, idKaryawan: editEmployee.idKaryawan}))
+    const { id, name, title, idKaryawan } = editEmployee
+    dispatch(UPDATE_EMPLOYEE(id, {name, idKaryawan, title}))
     closeEditModal()
   }
 
@@ -121,6 +124,7 @@ export default function Employee() {
                     <TableCell align="center" width={'10%'}>No.</TableCell>
                     <TableCell align="left">Nama</TableCell>
                     <TableCell align="left">ID Karyawan</TableCell>
+                    <TableCell align="left">Posisi</TableCell>
                     <TableCell align="center" width={'20%'}>Action</TableCell>
                   </TableRow>
                 </TableHead>
@@ -133,6 +137,7 @@ export default function Employee() {
                       <TableCell align="center" width={'10%'}>{index + 1 + (page * rowsPerPage)}</TableCell>
                       <TableCell align="left">{employee.name}</TableCell>
                       <TableCell align="left">{employee.idKaryawan}</TableCell>
+                      <TableCell align="left">{employee.title}</TableCell>
                       <TableCell align="center" width={'20%'}>
                         <Tooltip title="Edit">
                           <IconButton onClick={() => openEditEmployeeModal(employee)}>
@@ -208,6 +213,16 @@ export default function Employee() {
             onChange={(e) => setNewIdKaryawan(e.target.value)}
             fullWidth
           />
+          <TextField
+            margin="dense"
+            label="Posisi Karyawan"
+            type="text"
+            InputProps={{ ...customTextInput }}
+            variant="standard"
+            value={newTitleKaryawan}
+            onChange={(e) => setNewTitleKaryawan(e.target.value)}
+            fullWidth
+          />
         </DialogContent>
         <DialogActions>
           <Button
@@ -231,7 +246,7 @@ export default function Employee() {
             InputProps={{ ...customTextInput }}
             variant="standard"
             value={editEmployee.name}
-            onChange={(e) => setEditEmployee({ id: editEmployee.id, name: e.target.value, idKaryawan: editEmployee.idKaryawan })}
+            onChange={(e) => setEditEmployee({ ...editEmployee, name: e.target.value })}
             fullWidth
             helperText={duplicateError ? "Nama tidak boleh sama" : ""}
             error={duplicateError}
@@ -243,7 +258,19 @@ export default function Employee() {
             InputProps={{ ...customTextInput }}
             variant="standard"
             value={editEmployee.idKaryawan}
-            onChange={(e) => setEditEmployee({ id: editEmployee.id, idKaryawan: e.target.value, name: editEmployee.name })}
+            onChange={(e) => setEditEmployee({ ...editEmployee, idKaryawan: e.target.value })}
+            fullWidth
+            helperText={duplicateError ? "Nama tidak boleh sama" : ""}
+            error={duplicateError}
+          />
+          <TextField
+            margin="dense"
+            label="Posisi Karyawan"
+            type="text"
+            InputProps={{ ...customTextInput }}
+            variant="standard"
+            value={editEmployee.title}
+            onChange={(e) => setEditEmployee({ ...editEmployee, title: e.target.value })}
             fullWidth
             helperText={duplicateError ? "Nama tidak boleh sama" : ""}
             error={duplicateError}

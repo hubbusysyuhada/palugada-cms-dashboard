@@ -368,7 +368,7 @@ export default function CreateTransactionIn() {
                     fullWidth
                   >
                     {reduxEmployees.filter(e => !mechanicIds.includes(e.id) || e.id === v).map((e) => (
-                      <MenuItem value={e.id} selected={v === e.id}>{e.name}</MenuItem>
+                      <MenuItem value={e.id} selected={v === e.id}>{e.name} — {e.title}</MenuItem>
                     ))}
                   </Select>
                   <Tooltip title="Hapus">
