@@ -218,7 +218,7 @@ export default function CreateTransactionIn() {
                       key={item.id}
                       sx={{ '& > *': { borderBottom: 'unset !important' } }}
                     >
-                      <TableCell align="left">{item.unique_id}0000</TableCell>
+                      <TableCell align="left">{item.unique_id}</TableCell>
                       <TableCell align="left">{item.name}</TableCell>
                       <TableCell align="left">{`Rp. ${item.selling_price.toLocaleString('id')}`}</TableCell>
                       <TableCell align="left">{item.stock} {item.unit}</TableCell>

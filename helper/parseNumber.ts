@@ -1,4 +1,3 @@
-export default (n: number) => {
-  if (n < 10) return `0${n}`
-  return `${n}`
+export default (n: number, maxLenght = 2) => {
+  return String(n).padStart(maxLenght, '0');
 }

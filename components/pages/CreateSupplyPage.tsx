@@ -82,13 +82,28 @@ export default function CreateSupply() {
 
     const subCategoryIndex: Record<string, number> = {}
 
+    const generatePriceCode = (sellingPrice: number) => {
+      const splitted = String(sellingPrice).split('')
+      const reverse = JSON.parse(JSON.stringify(splitted)).reverse()
+      let counter = 0
+    
+      for (let i = 0; i < reverse.length; i++) {
+        const current = reverse[i]
+        const next = reverse[i + 1]
+        if (current === '0' && next === '0') counter++
+      }
+      const res = [splitted[2] || '0', splitted[1] || '0', splitted[0] || '0']
+      return `${counter}0${res.join('')}`
+    }
+
     copy.forEach(p => {
       if (p.sub_category_id) {
-        const subid = parseNumber(p.sub_category_id)
+        const subid = parseNumber(p.sub_category_id, 3)
         if (!subCategoryIndex[subid]) subCategoryIndex[subid] = 1
         const rowId = parseNumber(subCategoryIndex[subid])
         subCategoryIndex[subid]++
-        p.unique_id = `${subid}${rowId}${issued_date}`
+        const priceCode = generatePriceCode(p.selling_price)
+        p.unique_id = `${subid}${rowId}${issued_date}${priceCode}`
       }
       else p.unique_id = ""
 
@@ -120,6 +135,8 @@ export default function CreateSupply() {
       due_date: `${due_date.get('years')}-${due_date.get('months') + 1}-${due_date.get('dates')} 23:59:59`,
       items
     }
+    console.log(items);
+    
     SwalModal({
       action: () => dispatch(CREATE_SUPPLY(data)),
       title: "Buat Supply Baru?",
@@ -168,7 +185,8 @@ export default function CreateSupply() {
   const handleNumberChange = (key: 'buying_price' | 'selling_price' | 'stock', value: number, index: number) => {
     const data: SupplyItemPayloadType[] = JSON.parse(JSON.stringify(items))
     data[index][key] = +value
-    setItems(data)
+    if (key === 'selling_price') validateItems(data)
+    else setItems(data)
   }
 
   const handleDescChange = (value: string, index: number) => {
