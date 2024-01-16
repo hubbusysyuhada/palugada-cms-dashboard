@@ -67,7 +67,7 @@ export default function Employee() {
 
   const createEmployee = (e: any) => {
     e.preventDefault()
-    dispatch(CREATE_EMPLOYEE({name: newName, idKaryawan: newIdKaryawan}))
+    dispatch(CREATE_EMPLOYEE({name: newName, idKaryawan: newIdKaryawan, title: newTitleKaryawan}))
     closeCreateModal()
   }
 

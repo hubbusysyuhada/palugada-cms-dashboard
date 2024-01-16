@@ -217,15 +217,53 @@ export default async (t: Transaction, base64Img: string): Promise<pdfMake.TDocum
 
   content.push(
     {
-      margin: [0, 20, 0, 0],
-      text: 'Hormat Kami,',
-      style: 'footer'
-    },
-    {
-      margin: [0, 40, 30, 0],
-      text: 'Kasir',
-      style: 'footer'
-    },
+      layout: 'noBorders',
+      table: {
+        widths: [325, 100, 75],
+        body: [
+          [
+            {
+              text: '•  Suyono - 1420005976302 (mandiri)\n•  Suyono - 2160472629 (BCA)',
+              style: ['detail'],
+              margin: [15, 0, 0, 0]
+            },
+            {
+              text: ''
+            },
+            {
+              text: '',
+              style: 'detail'
+            },
+          ],
+          [
+            {
+              text: ''
+            },
+            {
+              text: 'Penerima,',
+              style: ['detail', 'center'],
+            },
+            {
+              text: 'Hormat kami,',
+              style: ['detail', 'center'],
+            },
+          ],
+          [
+            {
+              text: ''
+            },
+            {
+              text: '(.............................)',
+              style: ['detail', 'center', 'recipientFooter'],
+            },
+            {
+              text: 'kasir',
+              style: ['detail', 'center', 'recipientFooter'],
+            },
+          ],
+        ]
+      }
+    }
   )
 
   const metadata: pdfMake.TDocumentDefinitions = {
@@ -241,9 +279,8 @@ export default async (t: Transaction, base64Img: string): Promise<pdfMake.TDocum
         fontSize: 8,
         alignment: 'right'
       },
-      footer: {
-        fontSize: 8,
-        alignment: 'right'
+      recipientFooter: {
+        margin: [0, 40, 0, 0],
       },
       subHeader: {
         fontSize: 6

@@ -23,7 +23,7 @@ export const FETCH_ALL_EMPLOYEES = (payload: Partial<{ name: string; limit: numb
   }
 }
 
-export const CREATE_EMPLOYEE = (payload: { name: string; idKaryawan: string; }) => {
+export const CREATE_EMPLOYEE = (payload: { name: string; idKaryawan: string; title: string; }) => {
   return async (dispatch: UseAppDispatchType) => {
     try {
       const token = localStorage.getItem('access_token')
