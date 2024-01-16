@@ -3,7 +3,7 @@ import { RootStateType, useAppDispatch } from '@/store'
 import { useSelector } from 'react-redux'
 import { IconButton, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip, TablePagination, Checkbox, ListItemText, Collapse, Box, Typography, SpeedDial, SpeedDialIcon, SpeedDialAction } from '@mui/material'
 import NoData from '../NoData'
-import { KeyboardArrowDown, KeyboardArrowUp, InfoOutlined, ImportExport, ArrowRightAlt, ProductionQuantityLimits, AddShoppingCart, BarChart, Settings, Print } from '@mui/icons-material';
+import { KeyboardArrowDown, KeyboardArrowUp, ArrowRightAlt, ProductionQuantityLimits, AddShoppingCart, BarChart, Settings, Print } from '@mui/icons-material';
 import { SET_ROUTE } from '@/store/actions/GlobalContextAction'
 import { FETCH_ALL_TRANSACTIONS } from '@/store/actions/TransactionAction'
 import { Transaction as TransactionType, TypeOfTransactionType } from '@/store/reducer/TransactionReducer'
@@ -23,7 +23,7 @@ export default function Transaction(props: { base64Logo: string }) {
   const keywords = useRef('')
   const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(null)
   const [endDate, setEndDate] = useState<dayjs.Dayjs | null>(null)
-  const [createdAtOrderBy, setCreatedAtOrderBy] = useState<'ASC' | 'DESC' | ''>('')
+  const [createdAtOrderBy, setCreatedAtOrderBy] = useState<'ASC' | 'DESC'>('DESC')
   const [hover, setHover] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(25)
   const [page, setPage] = useState(0)
@@ -33,7 +33,7 @@ export default function Transaction(props: { base64Logo: string }) {
   const dispatch = useAppDispatch()
 
   useEffect(() => {
-    filterSearch()
+    filterSearch([['created_at', createdAtOrderBy]])
   }, [])
 
   useEffect(() => {
@@ -144,20 +144,16 @@ export default function Transaction(props: { base64Logo: string }) {
 
   const handleSortCreatedAt = () => {
     switch (createdAtOrderBy) {
-      case "":
-        setCreatedAtOrderBy("ASC")
-        break;
       case "ASC":
         setCreatedAtOrderBy("DESC")
         break;
       case "DESC":
-        setCreatedAtOrderBy("")
+        setCreatedAtOrderBy("ASC")
         break;
     }
   }
 
   const renderSortCreatedAt = () => {
-    if (!createdAtOrderBy) return <ImportExport className="btn-sort" onClick={handleSortCreatedAt} />
     return <ArrowRightAlt className={`btn-sort ${createdAtOrderBy === 'ASC' ? 'up' : 'down'}`} onClick={handleSortCreatedAt} />
   }
 
