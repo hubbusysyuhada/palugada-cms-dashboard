@@ -23,6 +23,7 @@ export type TransactionPayloadType = {
   customer_name: string;
   customer_phone: string;
   notes: string;
+  machine_number: string;
 }
 
 export type ItemPayloadType = {
@@ -46,6 +47,7 @@ export default function CreateTransactionIn() {
     customer_name: '',
     customer_phone: '',
     notes: '',
+    machine_number: '',
   })
   const [items, setItems] = useState<ItemPayloadType[]>([])
   const [services, setServices] = useState<ServiceType[]>([])
@@ -319,6 +321,19 @@ export default function CreateTransactionIn() {
             />
           </div>
         </div>
+        <div className={style('form-group')}>
+          <h4>Nomor Rangka</h4>
+          <div className={style('user-input')}>
+            <TextField
+              className="text-align-left"
+              value={payload.machine_number}
+              onChange={e => setPayload({ ...payload, machine_number: e.target.value })}
+              placeholder='Nomor Rangka/Mesin'
+              variant="standard"
+              fullWidth
+            />
+          </div>
+        </div>
         <div className={style(['form-group', 'multiline'])}>
           <h4>Catatan</h4>
           <div className={style('user-input')}>
@@ -367,7 +382,7 @@ export default function CreateTransactionIn() {
                     onChange={e => handleChangeMechanic(i, e.target.value)}
                     fullWidth
                   >
-                    {reduxEmployees.filter(e => !mechanicIds.includes(e.id) || e.id === v).map((e) => (
+                    {reduxEmployees.filter(e => (!mechanicIds.includes(e.id) || e.id === v) && e.is_active).map((e) => (
                       <MenuItem value={e.id} selected={v === e.id}>{e.name} — {e.title}</MenuItem>
                     ))}
                   </Select>

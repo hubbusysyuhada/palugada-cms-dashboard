@@ -84,16 +84,19 @@ export default function CreateSupply() {
 
     const generatePriceCode = (sellingPrice: number) => {
       const splitted = String(sellingPrice).split('')
-      const reverse = JSON.parse(JSON.stringify(splitted)).reverse()
       let counter = 0
+      const res: string[] = []
+      
+      splitted.forEach((v, i) => {
+        if (!+v && !+splitted[i - 1]) counter++
+        else res.unshift(v)
+      })
     
-      for (let i = 0; i < reverse.length; i++) {
-        const current = reverse[i]
-        const next = reverse[i + 1]
-        if (current === '0' && next === '0') counter++
+      if (res.length < 4) {
+        res.push('0')
+        if (sellingPrice >= 100000) counter++
       }
-      const res = [splitted[2] || '0', splitted[1] || '0', splitted[0] || '0']
-      return `${counter}0${res.join('')}`
+      return `${counter}${res.join('')}`
     }
 
     copy.forEach(p => {

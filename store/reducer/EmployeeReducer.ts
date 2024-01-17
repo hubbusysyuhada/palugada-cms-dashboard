@@ -10,6 +10,7 @@ export type Employee = {
   name: string;
   idKaryawan: string;
   title: string;
+  is_active: boolean;
 }
 
 const initialState: EmployeeReducerType = {
