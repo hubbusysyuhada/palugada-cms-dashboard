@@ -24,7 +24,8 @@ export default function Employee() {
     id: '',
     name: '',
     idKaryawan: '',
-    title: ''
+    title: '',
+    is_active: true
   })
   const [duplicateError, setDuplicateError] = useState(true)
   const [disableAddBtn, setDisableAddBtn] = useState(true)
@@ -81,7 +82,7 @@ export default function Employee() {
 
   const closeEditModal = () => {
     setOpenEditModal(false)
-    setEditEmployee({ id: '', name: '', idKaryawan: '', title: '' })
+    setEditEmployee({ id: '', name: '', idKaryawan: '', title: '', is_active: false })
     setDisableEditBtn(true)
   }
 

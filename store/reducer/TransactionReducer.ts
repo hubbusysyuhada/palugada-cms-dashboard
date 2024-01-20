@@ -41,6 +41,7 @@ export type Transaction = {
   customer_phone: string;
   type: TypeOfTransactionType;
   notes?: string;
+  discount: number;
   additional_services: ServiceType[],
   mechanics: Employee[];
   transaction_items: TransactionItem[]

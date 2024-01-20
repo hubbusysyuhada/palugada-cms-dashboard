@@ -49,6 +49,7 @@ export default function CreateTransactionIn() {
     notes: '',
     machine_number: '',
   })
+  const [discount, setDiscount] = useState(0)
   const [items, setItems] = useState<ItemPayloadType[]>([])
   const [services, setServices] = useState<ServiceType[]>([])
   const [totalPrice, setTotalPrice] = useState(0)
@@ -74,8 +75,9 @@ export default function CreateTransactionIn() {
     let total = 0
     services.forEach(({ price }) => total += price)
     items.forEach(i => total += i.price * i.amount)
+    total -= discount
     setTotalPrice(total)
-  }, [services, items])
+  }, [services, items, discount])
 
   const backToTransactions = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.preventDefault()
@@ -92,6 +94,7 @@ export default function CreateTransactionIn() {
       ...payload,
       services,
       mechanicIds,
+      discount,
       items: items.map(({ id, amount }) => ({ id, amount })),
     }
     SwalModal({
@@ -100,7 +103,6 @@ export default function CreateTransactionIn() {
       text: "Data yang sudah tersimpan tidak dapat diubah.",
       icon: "question"
     })
-
   }
 
   const isPayloadValidated = () => {
@@ -154,17 +156,21 @@ export default function CreateTransactionIn() {
     setMechanicIds(val)
   }
 
+  const changeNumber = (value: string | number) => {
+    if (!value) value = 0
+    else if (value) {
+      const splitted = String(value).split('Rp. ')
+      const parsedValue = +splitted[splitted.length - 1].split('.').join('')
+      if (isNaN(parsedValue)) return 0
+      value = parsedValue
+    }
+
+    return value
+  }
+
   const handleChangeService = (index: number, value: string | number, key: 'name' | 'price') => {
     const val: ServiceType[] = JSON.parse(JSON.stringify(services))
-    if (key === 'price') {
-      if (!value) value = 0
-      else if (value) {
-        const splitted = String(value).split('Rp. ')
-        const parsedValue = +splitted[splitted.length - 1].split('.').join('')
-        if (isNaN(parsedValue)) return
-        value = parsedValue
-      }
-    }
+    if (key === 'price') value = changeNumber(value)
     val[index] = { ...val[index], [key]: value }
     setServices(val)
   }
@@ -346,6 +352,20 @@ export default function CreateTransactionIn() {
               fullWidth
               multiline
               maxRows={4}
+            />
+          </div>
+        </div>
+        <div className={style('form-group')}>
+          <h4>Potongan</h4>
+          <div className={style('user-input')}>
+            <TextField
+              type="text"
+              InputProps={{ disableUnderline: true }}
+              className={style(["react-number-input", "price"])}
+              variant="standard"
+              value={parseCurrency(discount)}
+              onChange={(e) => setDiscount(changeNumber(e.target.value) as number)}
+              fullWidth
             />
           </div>
         </div>

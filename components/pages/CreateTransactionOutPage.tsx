@@ -24,6 +24,7 @@ export default function CreateTransactionOut() {
     customer_name: '',
     customer_phone: '',
     notes: '',
+    machine_number: ''
   })
   const [items, setItems] = useState<ItemPayloadType[]>([])
   const [services, setServices] = useState<ServiceType[]>([])

@@ -293,6 +293,17 @@ export default function Transaction(props: { base64Logo: string }) {
           ))}
         </Box>
 
+        <Box className='d-flex flex-space-between' width='100%'>
+          <Box className='width-20'>
+            <Box className='d-flex flex-space-between'>
+              <Typography variant='caption'><span style={{ fontWeight: "bold" }}>Potongan</span></Typography>
+              <Typography variant='caption'>:</Typography>
+            </Box>
+          </Box>
+          <Box className='width-80 ml-10' textAlign="justify">
+            <Typography variant='caption'><span style={{ fontWeight: "bold" }}>{parseCurrency(t.discount)}</span></Typography>
+          </Box>
+        </Box>
 
         <Box className='d-flex flex-space-between mt-20' width='100%'>
           <Box className='width-20'>

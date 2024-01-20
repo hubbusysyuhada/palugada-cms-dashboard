@@ -210,6 +210,8 @@ export default function Navbar() {
         }}
       >
         {renderTabs()}
+      </Tabs>
+      <div className={style['account-tab-container']}>
         <div className={style['account-tab']}>
           <Button
             className={style['button-tab']}
@@ -219,7 +221,7 @@ export default function Navbar() {
           </Button>
           {renderAccountSettingBtn()}
         </div>
-      </Tabs>
+      </div>
       <h5 className="text-center mb-40">{COMPANY_TITLE}™<br /> 2023</h5>
 
       <Dialog open={openModal} onClose={closeModal} aria-labelledby="form-dialog-title" style={{ width: '500px', margin: 'auto', textAlign: 'center' }}>

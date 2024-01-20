@@ -47,12 +47,20 @@ const generateTable = (t: Transaction) => {
     ])
   })
 
-  data.table.body.push([
-    { text: '', border: [false, false, false, false] },
-    { text: '', border: [false, false, false, false] },
-    { text: 'Total', style: ['totalPrice', 'right'], border: [false, false, false, false] },
-    { text: parseCurrency(t.total_price), style: ['totalPrice', 'right'], border: [false, false, false, false] },
-  ])
+  data.table.body.push(
+    [
+      { text: '', border: [false, false, false, false] },
+      { text: '', border: [false, false, false, false] },
+      { text: 'Potongan', style: ['discount', 'right'], border: [false, false, false, false] },
+      { text: parseCurrency(t.discount), style: ['discount', 'right'], border: [false, false, false, false] },
+    ],
+    [
+      { text: '', border: [false, false, false, false] },
+      { text: '', border: [false, false, false, false] },
+      { text: 'Total', style: ['totalPrice', 'right'], border: [false, false, false, false] },
+      { text: parseCurrency(t.total_price), style: ['totalPrice', 'right'], border: [false, false, false, false] },
+    ],
+  )
 
 
   return data
@@ -317,6 +325,9 @@ export default async (t: Transaction, base64Img: string): Promise<pdfMake.TDocum
       },
       totalPrice: {
         bold: true,
+        fontSize: 9
+      },
+      discount: {
         fontSize: 9
       }
     }
